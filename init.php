@@ -8,8 +8,8 @@
     const DB_USER = 'root';
     const DB_PASS = '';
 
-    define('TELEGRAM_TOKEN', '6151465890:AAHxUqv4PBZP6j9YRDLZOj_dT5IxD8ymQrA');
-    define('TELEGRAM_CHATID', '-1001733114623');
+    define('TELEGRAM_TOKEN', '');
+    define('TELEGRAM_CHATID', '');
 
     include 'core/db.php';
     include 'core/system.php';
