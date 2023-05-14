@@ -36,5 +36,9 @@ return (function()
             'name' => '/^complete\/?$/',
             'controller' => 'orders/active'
         ],
+        [
+            'name' => '/^allactive\/?$/',
+            'controller' => 'orders/allActive'
+        ],
     ];
 }) ();

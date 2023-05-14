@@ -13,6 +13,12 @@
         return dbQuery($sql, $params)->fetchAll();
     }
 
+    function getAllActiveOrders()
+    {
+        $sql = "SELECT * FROM `orders` WHERE `dt_delivered` IS NULL";
+        return dbQuery($sql)->fetchAll();
+    }
+
     function getCompleteOrders(string $place)
     {
         $params = ['place' => $place];
