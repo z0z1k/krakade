@@ -1,7 +1,9 @@
 	<? foreach ($orders as $order): ?>
 		<div class="row">
+                <div class="col"><?=$order['place']?></div>
 				<div class="col"><?=$order['client_address']?></div>
             	<div class="col"><?=$order['client_phone']?></div>
+                <div class="col">Бути до <?=$order['beReady']?></div>
 
 				<?php if($order['paymentType'] == 'Оплата не потрібна') {
 						$order['paymentType'] = "Кур'єр не оплачує";

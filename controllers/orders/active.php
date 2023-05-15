@@ -13,8 +13,6 @@
             $tgMessage = $params['place'] . " потрібен кур'єр. Замовлення буде готове о " . $params['beReady'] . ". Адреса: " . $params['address'] . ", номер телефону: " . $params['phone'] . "\n" . $params['paymentType'] . "\n" . $params['orderComent'];
             
             
-            unset($params['beReady']);
-            
             if (empty($errors)) {
                 $params['m_id'] = message_to_telegram($tgMessage)['result']['message_id'];
                 createOrder($params);

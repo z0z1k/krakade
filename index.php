@@ -44,6 +44,11 @@
         $name = '';
     }
 
+    $logName = 'logs/' . date("d.m.Y", time());
+    $logData = $_SERVER['REMOTE_ADDR'] . '|' . $_SERVER['HTTP_USER_AGENT'] . '|' . $_SERVER['QUERY_STRING'] . "\n";
+    file_put_contents($logName, $logData, FILE_APPEND);
+
+
     $html = template('base/v_main', [
         'title' => $pageTitle,
         'content' => $pageContent,

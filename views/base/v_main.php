@@ -10,7 +10,7 @@
     <link rel="canonical" href="<?=$canonical?>">
 </head>
 <body>
-    
+
     <? if (!empty($errors)): ?>
         <? foreach ($errors as $error): ?>
             <script> alert("<?=$error?>")</script>

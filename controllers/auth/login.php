@@ -3,7 +3,7 @@
     $authErr = false;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $login = trim($_POST['login']);
+        $login = strtolower(trim($_POST['login']));
         $password = trim($_POST['password']);
         $remember = isset($_POST['remember']);
 

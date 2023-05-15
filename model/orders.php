@@ -2,7 +2,7 @@
 
     function createOrder(array $params)
     {
-        $sql = "INSERT INTO `orders` (`client_address`, `client_phone`, `place`, `tg_message_id`, `orderComent`, `paymentType`) VALUES (:address, :phone, :place, :m_id, :orderComent, :paymentType)";
+        $sql = "INSERT INTO `orders` (`client_address`, `client_phone`, `place`, `tg_message_id`, `orderComent`, `paymentType`, `beReady`) VALUES (:address, :phone, :place, :m_id, :orderComent, :paymentType, :beReady)";
         dbQuery($sql, $params);
     }
 

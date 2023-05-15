@@ -4,6 +4,7 @@
 			<div class="col">
 				<p class="card-text">Адреса: <?=$order['client_address']?></p>
             	<p class="card-text">Номер клієнта: <?=$order['client_phone']?></p>
+				<p class="card-text">Буде готове: <?=$order['beReady']?></p>
 
 				<?php if($order['paymentType'] == 'Оплата не потрібна') {
 						$order['paymentType'] = "Кур'єр не оплачує";
