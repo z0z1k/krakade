@@ -45,7 +45,7 @@
     }
 
     $logName = 'logs/' . date("d.m.Y", time());
-    $logData = $_SERVER['REMOTE_ADDR'] . '|' . $_SERVER['HTTP_USER_AGENT'] . '|' . $_SERVER['QUERY_STRING'] . "\n";
+    $logData = $_SERVER['REMOTE_ADDR'] . '|' . $_SERVER['HTTP_USER_AGENT'] . '|' . $_SERVER['QUERY_STRING'] . '|' . $name . "\n";
     file_put_contents($logName, $logData, FILE_APPEND);
 
 
