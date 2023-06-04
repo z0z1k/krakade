@@ -25,7 +25,16 @@
 						$order['dt_get'] = substr($order['dt_get'], 10);
 					}
 				?>
-				
+
+                <div class="col">
+
+                    <?php if ($order['name'] === NULL): ?>
+                        <a href = "<?=BASE_URL?>setCourier/<?=$order['order_id']?>/<?=$userID?>" class="btn btn-primary mt-auto">Взяти замовлення</a>
+                    <?php else: ?>
+                        Кур'єр: <?=$order['name']?>
+                        <a href = "<?=BASE_URL?>setCourier/<?=$order['order_id']?>/<?=$userID?>" class="btn btn-primary mt-auto">Перепризначити</a>
+                    <?php endif ?>
+                </div>
 
             	<div class="col">
                     <a href="<?=BASE_URL?>active/<?=$order['order_id']?>" class="btn btn-primary mt-auto">Отримав <?=$order['dt_get']?></a>

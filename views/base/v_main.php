@@ -19,16 +19,16 @@
 
     <div class="container">
 
-    <? if ($username != ''): ?>
+    <? if ($userName != ''): ?>
     <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-2">
-	    <a class="navbar-brand" href="<?=BASE_URL?>">Вітаємо, <?=$username?>!</a>
+	    <a class="navbar-brand" href="<?=BASE_URL?>">Вітаємо, <?=$userName?>!</a>
         <span><a href="<?=BASE_URL?>logout" class="btn btn-primary mt-auto">Вийти</a></span>
 
 
 	    <div class="collapse navbar-collapse" id="navbarColor02"></div>
 
         <div class="text-right" style="color:white">                
-                    <h4>Контакти:</h2>                
+                    <h4 id="btn">Контакти:</h4>
                     <p>0509684567 Сергій</p>      
         </div>
         <? endif ?>
@@ -40,4 +40,5 @@
         </div>
 
 </body>
+<script src="<?=BASE_URL?>assets/js/orders.js"></script>
 </html>

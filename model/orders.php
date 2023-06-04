@@ -9,13 +9,13 @@
     function getActiveOrders(string $place)
     {
         $params = ['place' => $place];
-        $sql = "SELECT * FROM `orders` WHERE `dt_delivered` IS NULL AND `place` = :place";
+        $sql = "SELECT * FROM `orders` LEFT JOIN `users` on `orders`.`courier_id`=`users`.`id_user` WHERE `dt_delivered` IS NULL AND `place` = :place";
         return dbQuery($sql, $params)->fetchAll();
     }
 
     function getAllActiveOrders()
     {
-        $sql = "SELECT * FROM `orders` WHERE `dt_delivered` IS NULL";
+        $sql = "SELECT * FROM `orders` LEFT JOIN `users` on `orders`.`courier_id`=`users`.`id_user` WHERE `dt_delivered` IS NULL";
         return dbQuery($sql)->fetchAll();
     }
 
@@ -45,7 +45,15 @@
         return $res['tg_message_id'];
     }
 
-    function validateErrors(array &$fields) : array {
+    function setCourier(int $idOrd, int $idCour)
+    {
+        $params = ['idOrd' => $idOrd, 'idCour' => $idCour];
+        $sql = "UPDATE `orders` SET `courier_id` = :idCour WHERE `orders`.`order_id` = :idOrd";
+        return dbQuery($sql, $params);
+    }
+
+    function validateErrors(array &$fields) : array
+    {
         $errors = [];
 
         $fields['address'] = trim($fields['address']);
@@ -54,15 +62,15 @@
         $fields['paymentType'] = trim($fields['paymentType']);
 
         if (mb_strlen($fields['address'], 'UTF-8') < 10) {
-            $errors[] = 'Адреса не може бути коротша 10 символів';
+            //$errors[] = 'Адреса не може бути коротша 10 символів';
         }
 
         if (mb_strlen($fields['phone'], 'UTF-8') < 10) {
-            $errors[] = "Номер телефону не може бути коротший 10 символів";
+            //$errors[] = "Номер телефону не може бути коротший 10 символів";
         }
 
         if (mb_strlen($fields['beReady'], 'UTF-8') < 5) {
-            $errors[] = "Невірно вказаний час";
+            //$errors[] = "Невірно вказаний час";
         }
 
         if ($fields['paymentType'] == ''){

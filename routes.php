@@ -40,5 +40,11 @@ return (function()
             'name' => '/^allactive\/?$/',
             'controller' => 'orders/allActive'
         ],
+        [
+            'name' => "/^setCourier\/($intGT0)\/($intGT0)\/?$/",
+            'controller' => 'orders/setCourier',
+            'params' => ['order' => 1,
+                'courier' => 2]
+        ],
     ];
 }) ();

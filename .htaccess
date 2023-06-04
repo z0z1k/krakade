@@ -13,3 +13,7 @@ Options -Indexes
 <FilesMatch "index.(php)$">
     Allow from all
 </FilesMatch>
+
+<FilesMatch "activeOrders.(php)$">
+    Allow from all
+</FilesMatch>

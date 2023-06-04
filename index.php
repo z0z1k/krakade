@@ -44,15 +44,17 @@
         $name = '';
     }
 
+
+
     $logName = 'logs/' . date("d.m.Y", time());
-    $logData = date("G:i:s", time()) . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $_SERVER['HTTP_USER_AGENT'] . '|' . substr($_SERVER['QUERY_STRING'], 15) . '|' . $name . "\n";
+    $logData = date("G:i:s", time()) . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $_SERVER['HTTP_USER_AGENT'] . '|' . substr($_SERVER['QUERY_STRING'], 15) . '|' . $userName . "\n";
     file_put_contents($logName, $logData, FILE_APPEND);
 
 
     $html = template('base/v_main', [
         'title' => $pageTitle,
         'content' => $pageContent,
-        'username' => $name,
+        'userName' => $userName,
         'canonical' => $pageCanonical,
         'errors' => $errors
     ]);
