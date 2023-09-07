@@ -33,6 +33,11 @@ return (function()
             'params' => ['id' => 1]
         ],
         [
+            'name' => "/^edit\/($intGT0)\/?$/",
+            'controller' => 'orders/edit',
+            'params' => ['id' => 1]
+        ],
+        [
             'name' => '/^complete\/?$/',
             'controller' => 'orders/active'
         ],

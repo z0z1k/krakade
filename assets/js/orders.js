@@ -13,9 +13,11 @@ ajaxGetOrders('/api/activeOrders.php');
         let comment = `<p class="card-text">${row.orderComent}</p>`;
         let dt_get = row.dt_get;
         let courier = `<p class="card-text">${row.courier}</p>`;
+        let edit = `<p class="card-text"><a href="/edit/${row.order_id}">Редагувати замовлення</a></p>`;
+        let cancel = `<p class="card-text"><a href="/ready/${row.order_id}">Скасувати замовлення</a></p>`;
         let hr = `<hr>`;
 
-        let result = `<div class="row"><div class="col">${address}${phone}${beReady}${payment}${comment}${dt_get}${courier}${hr}</div></div>`;
+        let result = `<div class="row"><div class="col">${address}${phone}${beReady}${payment}${comment}${dt_get}${courier}${edit}${cancel}${hr}</div></div>`;
         return result;
     }
 

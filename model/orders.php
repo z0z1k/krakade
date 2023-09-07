@@ -52,6 +52,25 @@
         return dbQuery($sql, $params);
     }
 
+    function getOrder(int $idOrd)
+    {
+        $params = ['id' => $idOrd];
+        $sql = "SELECT * FROM `orders` WHERE `order_id` = :id";
+        return dbQuery($sql, $params)->fetch();
+    }
+
+    function updateTgId(int $idOrd, int $tg_message_id)
+    {
+        $sql = "UPDATE `orders` SET `tg_message_id` = $tg_message_id WHERE `orders`.`order_id` = $idOrd";
+        return dbQuery($sql);
+    }
+
+    function updateOrder($params)
+    {
+        $sql = "UPDATE `orders` SET `beReady` = :beReady, `client_address` = :address, `client_phone` = :phone, `paymentType` = :paymentType, `orderComent` = :orderComent, `tg_message_id` = :m_id WHERE `orders`.`order_id` = :order_id";
+        dbQuery($sql, $params);
+    }
+
     function validateErrors(array &$fields) : array
     {
         $errors = [];
@@ -75,7 +94,7 @@
 
         if ($fields['paymentType'] == ''){
             $fields['paymentType'] = "Оплата не потрібна";
-        } else {
+        } else if (!str_contains($fields['paymentType'], "Потрібно оплатити")){
             $fields['paymentType'] = "Потрібно оплатити " . $fields['paymentType'] . " грн";
         }
 

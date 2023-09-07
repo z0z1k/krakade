@@ -12,6 +12,6 @@
 
 	</form>
 
-	<div>
+	<!--<div>
     <a href="<?=BASE_URL . $orderTypes?>"><?=$orderTypesText?></a>
-	</div>
+	</div>-->
