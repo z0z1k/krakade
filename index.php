@@ -1,5 +1,8 @@
 <?php
     session_start();
+    use System\DataBase\Connection;
+    use System\DataBase\QuerySelect;
+    use System\Database\SelectBuilder;
 
     include_once 'init.php';
 
@@ -58,5 +61,8 @@
         'canonical' => $pageCanonical,
         'errors' => $errors
     ]);
+
+    $qs = new QuerySelect(Connection::getInstance(), (new SelectBuilder('orders')));
+    var_dump($qs->where('dt_delivered is NULL')->get());
 
     echo $html;
