@@ -1,6 +1,6 @@
 <?php
     
-    if (isset($user) && $user['status'] == 1) {
+    if (isset($user)) {
         $pageTitle = 'Створити замовлення';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

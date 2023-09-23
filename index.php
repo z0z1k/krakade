@@ -1,10 +1,13 @@
 <?php
     session_start();
-    use System\DataBase\Connection;
-    use System\DataBase\QuerySelect;
-    use System\Database\SelectBuilder;
+
+    use Models\Order;
+    use System\User;
 
     include_once 'init.php';
+    include_once 'spl.php';
+
+    $user = User::getInstance();
 
     $pageCanonical = HOST . BASE_URL;
     $uri = $_SERVER['REQUEST_URI'];
@@ -41,13 +44,7 @@
 
     include_once($path);
 
-    if (isset($user['name'])) {
-        $name = $user['name'];
-    } else {
-        $name = '';
-    }
-
-
+    $userName = $user->getName() ?? '';
 
     $logName = 'logs/' . date("d.m.Y", time());
     $logData = date("G:i:s", time()) . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $_SERVER['HTTP_USER_AGENT'] . '|' . substr($_SERVER['QUERY_STRING'], 15) . '|' . $userName . "\n";
@@ -62,7 +59,8 @@
         'errors' => $errors
     ]);
 
-    $qs = new QuerySelect(Connection::getInstance(), (new SelectBuilder('orders')));
-    var_dump($qs->where('dt_delivered is NULL')->get());
+    $orders = Order::getInstance();
+    
+    var_dump($orders->active());
 
     echo $html;

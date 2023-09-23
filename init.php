@@ -19,11 +19,5 @@
     include 'model/orders.php';
     include 'model/tgmessage.php';
     include 'core/auth.php';
-    spl_autoload_register(function($class){
-        $path = str_replace('\\', '/', $class) . '.php';
-        if (file_exists($path)) {
-            include_once($path);
-        }
-    });
 
     $userName = $user['name'] ?? '';
