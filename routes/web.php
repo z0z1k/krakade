@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Orders as OrdersC;
+use App\Http\Controllers\Auth\Session;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,4 +18,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
     return view('home');
+});
+
+Route::resource('orders', OrdersC::class);
+
+Route::controller(Session::class)->group(function(){
+    Route::get('/auth/login', 'create')->name('login');
+    Route::post('/auth/login', 'store')->name('login.store');
 });

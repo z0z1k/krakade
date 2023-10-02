@@ -31,11 +31,14 @@
                     <div class="col col-12 col-md-3">
                         <ul class="nav nav-pills flex-column mb-auto">    
                         @auth                        
-                            <li>
-                                <a href="{{ route('home') }}" class="nav-link link-dark">Home page</a>
-                            </li>                          
+                                                   
                         @else
-
+                            <li>
+                                <a href="{{ route('orders.index') }}" class="nav-link link-dark">Активні замовлення</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('orders.create') }}" class="nav-link link-dark">Створити замовлення</a>
+                            </li>
                         @endif
                         </ul>
                     </div>
