@@ -32,13 +32,17 @@
                         <ul class="nav nav-pills flex-column mb-auto">    
                         @auth                        
                                                    
-                        @else
+                        
                             <li>
                                 <a href="{{ route('orders.index') }}" class="nav-link link-dark">Активні замовлення</a>
                             </li>
                             <li>
                                 <a href="{{ route('orders.create') }}" class="nav-link link-dark">Створити замовлення</a>
                             </li>
+                            <li>
+                                <a href="{{ route('users.index') }}" class="nav-link link-dark">Користувачі</a>
+                            </li>
+                        @else
                         @endif
                         </ul>
                     </div>

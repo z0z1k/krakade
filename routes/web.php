@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Orders as OrdersC;
+use App\Http\Controllers\Users as UsersC;
 use App\Http\Controllers\Auth\Session;
 
 /*
@@ -21,6 +22,10 @@ Route::get('/', function(){
 });
 
 Route::resource('orders', OrdersC::class);
+
+Route::resource('users', UsersC::class);
+Route::get('users/{id}/roles', [ UsersC::class, 'roles' ])->name('users.roles');
+Route::put('users/{id}/roles', [ UsersC::class, 'saveRoles']);
 
 Route::controller(Session::class)->group(function(){
     Route::get('/auth/login', 'create')->name('login');
