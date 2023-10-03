@@ -7,6 +7,7 @@
             @endforeach
         </tr>
     </table>
+
     <x-form method="put" action="{{ route('profile.update') }}">
         @bind($user)
         <div class="mb-3">
@@ -20,5 +21,6 @@
         @endbind
     </x-form>
     
+    <a href="{{ route('profile.password.edit') }}">Змінити пароль</a>
     
 </x-layouts.base>
