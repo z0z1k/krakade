@@ -6,6 +6,9 @@ use App\Http\Controllers\Orders as OrdersC;
 use App\Http\Controllers\Users as UsersC;
 use App\Http\Controllers\Auth\Session;
 
+use App\Http\Controllers\Profile\Info as ProfileInfo;
+use App\Http\Controllers\Profile\Password as ProfilePassword;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,6 +29,19 @@ Route::resource('orders', OrdersC::class);
 Route::resource('users', UsersC::class);
 Route::get('users/{id}/roles', [ UsersC::class, 'roles' ])->name('users.roles');
 Route::put('users/{id}/roles', [ UsersC::class, 'saveRoles']);
+
+Route::prefix('profile')->group(function(){
+    Route::controller(ProfilePassword::class)->group(function(){
+        Route::get('/password', 'edit')->name('profile.password.edit');
+        Route::put('/password', 'update')->name('profile.password.update');
+    });
+    
+
+    Route::controller(ProfileInfo::class)->group(function(){
+        Route::get('/info', 'show')->name('profile.info');
+        Route::put('/info', 'update')->name('profile.update');
+    });
+});
 
 Route::controller(Session::class)->group(function(){
     Route::get('/auth/login', 'create')->name('login');

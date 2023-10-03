@@ -30,9 +30,7 @@
                 <div class="row">
                     <div class="col col-12 col-md-3">
                         <ul class="nav nav-pills flex-column mb-auto">    
-                        @auth                        
-                                                   
-                        
+                        @auth
                             <li>
                                 <a href="{{ route('orders.index') }}" class="nav-link link-dark">Активні замовлення</a>
                             </li>
@@ -41,6 +39,9 @@
                             </li>
                             <li>
                                 <a href="{{ route('users.index') }}" class="nav-link link-dark">Користувачі</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('profile.info') }}" class="nav-link link-dark">Редагувати профіль</a>
                             </li>
                         @else
                         @endif

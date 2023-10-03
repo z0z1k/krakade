@@ -4,6 +4,7 @@
             <tr>
                 <th>Id</th>
                 <th>Email</th>
+                <th>Ім'я</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -11,6 +12,7 @@
             <tr>
                 <td>{{ $user->id }}</td>
                 <td>{{ $user->email }}</td>
+                <td>{{ $user->name }}</td>
                 <td>
                     <a href="{{ route('users.roles', [ $user->id]) }}">Додаткова інформація</a>
                 </td>
