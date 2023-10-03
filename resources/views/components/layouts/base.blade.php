@@ -17,9 +17,9 @@
                 HEADER
 
                 @auth
-                    <a href="#">Logout</a>
+                    <a href="{{ route('login.exit') }}">Logout</a>
                 @else
-                    <a href="#">Login</a>
+                    <a href="{{ route('login') }}">Login</a>
                 @endif
                 
             </div>
@@ -33,6 +33,12 @@
                         @auth
                             <li>
                                 <a href="{{ route('orders.index') }}" class="nav-link link-dark">Активні замовлення</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('places.index') }}" class="nav-link link-dark">Заклади</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('places.create') }}" class="nav-link link-dark">Додати заклад</a>
                             </li>
                             <li>
                                 <a href="{{ route('orders.create') }}" class="nav-link link-dark">Створити замовлення</a>

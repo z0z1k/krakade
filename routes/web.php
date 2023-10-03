@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Orders as OrdersC;
 use App\Http\Controllers\Users as UsersC;
+use App\Http\Controllers\Places as PlacesC;
 use App\Http\Controllers\Auth\Session;
 
 use App\Http\Controllers\Profile\Info as ProfileInfo;
@@ -26,6 +27,8 @@ Route::get('/', function(){
 
 Route::resource('orders', OrdersC::class);
 
+Route::resource('places', PlacesC::class);
+
 Route::resource('users', UsersC::class);
 Route::get('users/{id}/roles', [ UsersC::class, 'roles' ])->name('users.roles');
 Route::put('users/{id}/roles', [ UsersC::class, 'saveRoles']);
@@ -44,6 +47,12 @@ Route::prefix('profile')->group(function(){
 });
 
 Route::controller(Session::class)->group(function(){
-    Route::get('/auth/login', 'create')->name('login');
-    Route::post('/auth/login', 'store')->name('login.store');
+    Route::middleware('guest')->group(function(){
+        Route::get('/auth/login', 'create')->name('login');
+        Route::post('/auth/login', 'store')->name('login.store');
+    });
+    Route::middleware('auth')->group(function(){
+        Route::get('/auth/logout', 'exit')->name('login.exit');
+        Route::delete('/auth/logout', 'destroy')->name('login.destroy');
+    });
 });
