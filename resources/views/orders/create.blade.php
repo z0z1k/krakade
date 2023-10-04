@@ -1,5 +1,7 @@
 <x-layouts.base title="Створити замовлення">
+    {{$place->name}}
     <x-form method="post" action="{{ route('orders.store') }}">
+        <input type="hidden" name="place_id" value="{{$place->id}}">
         <x-form-input name="client_address" placeholder="Адреса" />
         <x-form-input name="client_phone" placeholder="Номер телефону" />
         <x-form-input name="be_ready" placeholder="Буде готове о" />

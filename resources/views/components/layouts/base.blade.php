@@ -41,9 +41,6 @@
                                 <a href="{{ route('places.create') }}" class="nav-link link-dark">Додати заклад</a>
                             </li>
                             <li>
-                                <a href="{{ route('orders.create') }}" class="nav-link link-dark">Створити замовлення</a>
-                            </li>
-                            <li>
                                 <a href="{{ route('users.index') }}" class="nav-link link-dark">Користувачі</a>
                             </li>
                             <li>

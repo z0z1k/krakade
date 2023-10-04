@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\Orders\Store as StoreRequest;
 
 use App\Models\Order;
+use App\Models\Place;
 
 class Orders extends Controller
 {
@@ -19,9 +21,9 @@ class Orders extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($place)
     {
-        return view('orders.create');
+        return view('orders.create', [ 'place' => Place::findOrFail($place)]);
     }
 
     /**
@@ -29,9 +31,8 @@ class Orders extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
+        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
         $data['message_id'] = 1;
-        $data['place_id'] = 1;
 
         Order::create($data);
         return redirect()->route('orders.index');

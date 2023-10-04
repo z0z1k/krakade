@@ -7,7 +7,6 @@
             <th>Телефон</th>
             <th>Email</th>
             <th></th>
-            <th></th>
         </tr>
 
         @foreach($places as $place)
@@ -16,8 +15,7 @@
             <td>{{ $place->address }}</td>
             <td>{{ $place->phone }}</td>
             <td>{{ $place->email }}</td>
-            <td><a href="#">Створити замовлення</a></td>
-            <td><a href="#">Редагувати інформацію</a></td>
+            <td><a href="{{ route('orders.create', [ 'place' => $place->id ]) }}">Створити замовлення</a></td>
         </tr>
         @endforeach
     </table>

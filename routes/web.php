@@ -26,6 +26,7 @@ Route::get('/', function(){
 });
 
 Route::resource('orders', OrdersC::class);
+Route::get('orders/create/{place}', [ OrdersC::class, 'create' ])->name('orders.create');
 
 Route::resource('places', PlacesC::class);
 
