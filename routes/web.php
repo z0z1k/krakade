@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\Session;
 use App\Http\Controllers\Profile\Info as ProfileInfo;
 use App\Http\Controllers\Profile\Password as ProfilePassword;
 
+use App\Http\Controllers\Registration as RegistrationC;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -57,3 +58,6 @@ Route::controller(Session::class)->group(function(){
         Route::delete('/auth/logout', 'destroy')->name('login.destroy');
     });
 });
+
+Route::get('register', [ RegistrationC::class, 'create' ])->name('registration.create');
+Route::post('register', [ RegistrationC::class, 'store' ])->name('registration.store');
