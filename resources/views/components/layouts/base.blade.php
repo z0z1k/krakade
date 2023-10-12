@@ -47,7 +47,7 @@
                                 <a href="{{ route('profile.info') }}" class="nav-link link-dark">Редагувати профіль</a>
                             </li>
                             <li>
-                                <a href="{{ route('registration.create') }}" class="nav-link link-dark">Створити профіль</a>
+                                <a href="{{ route('registration.place.create') }}" class="nav-link link-dark">Реєстрація\заклад</a>
                             </li>
                         @else
                         @endif
