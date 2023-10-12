@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Registration\Store as StoreRequest;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 
 class Registration extends Controller
@@ -23,6 +24,13 @@ class Registration extends Controller
         $user = User::create($data);
         Auth::login($user);
 
-        return redirect()->route('profile.info');
+        $role = Role::where('name', $request->userRole)->first();        
+        User::findOrFail(Auth::user()->id)->roles()->sync($role->id);
+
+        if ($role->name == 'place') {
+            return to_route('places.create');
+        } else {
+            return to_route('profile.info');
+        }
     }
 }

@@ -26,6 +26,7 @@ class Store extends FormRequest
             'email' => 'required|email',
             'password' => 'required',
             'phone' => 'required',
+            'userRole' => 'required',
         ];
     }
 }

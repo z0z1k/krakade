@@ -10,8 +10,7 @@ use App\Http\Controllers\Auth\Session;
 use App\Http\Controllers\Profile\Info as ProfileInfo;
 use App\Http\Controllers\Profile\Password as ProfilePassword;
 
-use App\Http\Controllers\Registration\Place as PlaceRegistrationC;
-use App\Http\Controllers\Registration\Courier as CourierRegistrationC;
+use App\Http\Controllers\Registration as RegistrationC;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -60,8 +59,5 @@ Route::controller(Session::class)->group(function(){
     });
 });
 
-Route::get('/place/register', [ PlaceRegistrationC::class, 'create' ])->name('registration.place.create');
-Route::post('/place/register', [ PlaceRegistrationC::class, 'store' ])->name('registration.place.store');
-
-Route::get('/courier/register', [ CourierRegistrationC::class, 'create' ])->name('registration.courier.create');
-Route::post('/courier/register', [ CourierRegistrationC::class, 'store' ])->name('registration.courier.store');
+Route::get('register', [ RegistrationC::class, 'create' ])->name('registration.create');
+Route::post('register', [ RegistrationC::class, 'store' ])->name('registration.store');
