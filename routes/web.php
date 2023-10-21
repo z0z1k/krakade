@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\Telegram;
+
 use App\Http\Controllers\Orders as OrdersC;
 use App\Http\Controllers\Users as UsersC;
 use App\Http\Controllers\Places as PlacesC;
@@ -61,3 +64,5 @@ Route::controller(Session::class)->group(function(){
 
 Route::get('register', [ RegistrationC::class, 'create' ])->name('registration.create');
 Route::post('register', [ RegistrationC::class, 'store' ])->name('registration.store');
+
+Notification::route('telegram', '-1001733114623s')->notify(new Telegram);

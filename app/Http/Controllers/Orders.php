@@ -8,6 +8,7 @@ use App\Http\Requests\Orders\Store as StoreRequest;
 use App\Models\Order;
 use App\Models\Place;
 
+
 class Orders extends Controller
 {
     /**
