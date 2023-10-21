@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Auth\Login as LoginRequest;
 use Illuminate\Http\Reqest;
 
+use Illuminate\Support\Facades\Auth;
+
 class Session extends Controller
 {
     public function create()

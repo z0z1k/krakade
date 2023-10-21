@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\Places\Store as StoreRequest;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Place;
@@ -28,9 +29,10 @@ class Places extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {        
-        $data = $request->only('name', 'address', 'phone', 'email') + [ 'user_id' => $request->user()->id ];
+    public function store(StoreRequest $request)
+    {
+        $request->validated();
+        $data = $request->only('name', 'address', 'description') + [ 'user_id' => $request->user()->id ];
         Place::create($data);
 
         return redirect()->route('places.index');
