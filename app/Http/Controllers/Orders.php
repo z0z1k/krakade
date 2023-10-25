@@ -8,6 +8,7 @@ use App\Http\Requests\Orders\Store as StoreRequest;
 use App\Models\Order;
 use App\Models\Place;
 
+use DefStudio\Telegraph\Models\TelegraphChat;
 
 class Orders extends Controller
 {
@@ -36,6 +37,11 @@ class Orders extends Controller
         $data['message_id'] = 1;
 
         Order::create($data);
+        
+        $chat = TelegraphChat::find(1);
+
+        //dd($chat);
+        //$chat->html("<strong>qq\n\nI'm here!")->send();
         return redirect()->route('orders.index');
     }
 

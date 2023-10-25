@@ -8,6 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 use NotificationChannels\Telegram\TelegramMessage;
+use NotificationChannels\Telegram\TelegramLocation;
 
 class Telegram extends Notification
 {
@@ -36,14 +37,13 @@ class Telegram extends Notification
      */
     public function toTelegram(object $notifiable)
     {
-        $url = url('/orders/');
+        $url = 'https://www.krkd.fun';
 
         return TelegramMessage::create()
             // Optional recipient user id.
             //->to($notifiable->telegram_user_id)
             // Markdown supported.
-            ->content("Testing tg laravel message\n")
-            ->line("Another line");
+            ->content("hi\n");
 
     }
 

@@ -65,4 +65,4 @@ Route::controller(Session::class)->group(function(){
 Route::get('register', [ RegistrationC::class, 'create' ])->name('registration.create');
 Route::post('register', [ RegistrationC::class, 'store' ])->name('registration.store');
 
-Notification::route('telegram', '-1001733114623s')->notify(new Telegram);
+//Notification::route('telegram', '-1001733114623s')->notify(new Telegram);

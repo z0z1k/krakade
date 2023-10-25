@@ -13,7 +13,7 @@
 
         @foreach($orders as $order)
         <tr>
-            <td>Place must be here</td>
+            <td>{{ $order->place->name }}</td>
             <td>{{ $order->be_ready }}</td>
             <td>{{ $order->client_address }}</td>
             <td>{{ $order->client_phone }}</td>
