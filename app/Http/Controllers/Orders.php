@@ -9,6 +9,8 @@ use App\Models\Order;
 use App\Models\Place;
 
 use DefStudio\Telegraph\Models\TelegraphChat;
+use DefStudio\Telegraph\Keyboard\Button;
+use DefStudio\Telegraph\Keyboard\Keyboard;
 
 class Orders extends Controller
 {
@@ -33,15 +35,23 @@ class Orders extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
-        $data['message_id'] = 1;
-
-        Order::create($data);
-        
+        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');        
         $chat = TelegraphChat::find(1);
 
-        //dd($chat);
-        //$chat->html("<strong>qq\n\nI'm here!")->send();
+        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ " . $data['client_address'] ."</strong>";
+        $message .= "\n{$data['be_ready']}, {$data['client_phone']}, {$data['payment_type']}\n{$data['comment']}";
+        
+        $url = env('APP_URL') . '/orders/take';
+
+        $response = $chat->html($message)->keyboard(Keyboard::make()->buttons([
+            Button::make('Взяти замовлення')->url($url),
+        ]))->send();
+        
+        if ($response->telegraphOk()) {
+            $data['message_id'] = $response->telegraphMessageId();
+            Order::create($data);
+        }
+
         return redirect()->route('orders.index');
     }
 
@@ -75,5 +85,10 @@ class Orders extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function take()
+    {
+        return view('orders.take');
     }
 }

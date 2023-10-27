@@ -29,6 +29,7 @@ Route::get('/', function(){
     return view('home');
 });
 
+Route::get('orders/take', [ OrdersC::class, 'take' ])->name('orders.take');
 Route::resource('orders', OrdersC::class);
 Route::get('orders/create/{place}', [ OrdersC::class, 'create' ])->name('orders.create');
 
@@ -64,5 +65,3 @@ Route::controller(Session::class)->group(function(){
 
 Route::get('register', [ RegistrationC::class, 'create' ])->name('registration.create');
 Route::post('register', [ RegistrationC::class, 'store' ])->name('registration.store');
-
-//Notification::route('telegram', '-1001733114623s')->notify(new Telegram);
