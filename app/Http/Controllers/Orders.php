@@ -47,12 +47,14 @@ class Orders extends Controller
             Button::make('Взяти замовлення')->url($url),
         ]))->send();
         
-        if ($response->telegraphOk()) {
-            $data['message_id'] = $response->telegraphMessageId();
-            Order::create($data);
+        if (!$response->telegraphOk()) {            
+            return redirect()->back()->with('message', 'order.error');
         }
 
-        return redirect()->route('orders.index');
+        $data['message_id'] = $response->telegraphMessageId();
+        Order::create($data);
+        return redirect()->route('orders.index')->with('message', 'order.created');
+
     }
 
     /**

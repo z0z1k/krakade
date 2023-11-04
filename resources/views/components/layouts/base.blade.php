@@ -54,6 +54,7 @@
                         </ul>
                     </div>
                     <div class="col col-12 col-md-9">
+                        <x-notifications />
                         <h1 class="h3 mb-4">{{ $title }}</h1>
                         {{ $slot }}
                     </div>
