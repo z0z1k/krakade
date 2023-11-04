@@ -17,9 +17,10 @@
             <td>{{ $order->be_ready }}</td>
             <td>{{ $order->client_address }}</td>
             <td>{{ $order->client_phone }}</td>
+            <td>{{ $order->comment }}</td>
             <td>{{ $order->payment_type }}</td>
             <td>Courier must be here</td>
-            <td>{{ $order->status }}</td>
+            <td>{{ $order->status->text() }}</td>
         </tr>
         @endforeach
     </table>

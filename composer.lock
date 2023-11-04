@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e94350c7fff210feaa1ae2505ec150ef",
+    "content-hash": "fc7d5c1ff80f7f2a14802e0b519fa889",
     "packages": [
         {
             "name": "brick/math",
@@ -942,6 +942,56 @@
                 }
             ],
             "time": "2022-02-20T15:07:15+00:00"
+        },
+        {
+            "name": "gollumsf/doctrine-tinyint",
+            "version": "v1.0.8",
+            "target-dir": "GollumSF/Doctrine",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GollumSF/doctrine-tinyint.git",
+                "reference": "b26e7db4b4ca54a946978dedb5b4363d12d59e87"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GollumSF/doctrine-tinyint/zipball/b26e7db4b4ca54a946978dedb5b4363d12d59e87",
+                "reference": "b26e7db4b4ca54a946978dedb5b4363d12d59e87",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^2|^3",
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "GollumSF\\Doctrine": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Damien Duboeuf",
+                    "email": "smeagolworms4@gmail.com"
+                }
+            ],
+            "description": "An tinyint type for Doctrine MYSQL",
+            "homepage": "https://github.com/GollumSF/doctrine-tinyint",
+            "keywords": [
+                "doctrine",
+                "symfony",
+                "tinyint"
+            ],
+            "support": {
+                "email": "smeagolworms4@gmail.com",
+                "issues": "https://github.com/GollumSF/doctrine-tinyint/issues",
+                "source": "https://github.com/GollumSF/doctrine-tinyint/tree/v1.0.8",
+                "wiki": "https://github.com/GollumSF/doctrine-tinyint/blob/master/README.md"
+            },
+            "time": "2022-05-20T21:56:35+00:00"
         },
         {
             "name": "graham-campbell/result-type",

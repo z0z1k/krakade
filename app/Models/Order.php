@@ -16,4 +16,8 @@ class Order extends Model
     {
         return $this->belongsTo(Place::class);
     }
+
+    protected $casts = [
+        'status' => \App\Enums\Order\Status::class,
+    ];
 }
