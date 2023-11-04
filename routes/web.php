@@ -29,7 +29,7 @@ Route::get('/', function(){
     return view('home');
 });
 
-Route::get('orders/take', [ OrdersC::class, 'take' ])->name('orders.take');
+Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
 Route::resource('orders', OrdersC::class);
 Route::get('orders/create/{place}', [ OrdersC::class, 'create' ])->name('orders.create');
 

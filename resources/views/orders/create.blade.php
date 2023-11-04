@@ -18,7 +18,7 @@
 
         <div class="mb-3">
             <x-form-input name="payment_type" label="Кур'єр повинен оплатити:" />
-        </div>
+        </div>        
 
         <div class="mb-3">
             <x-form-textarea name="comment" label="Коментар:"></x-form-textarea>

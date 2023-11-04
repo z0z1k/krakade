@@ -17,6 +17,11 @@ class Order extends Model
         return $this->belongsTo(Place::class);
     }
 
+    public function courier()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected $casts = [
         'status' => \App\Enums\Order\Status::class,
     ];
