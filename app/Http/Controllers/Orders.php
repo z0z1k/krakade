@@ -75,7 +75,7 @@ class Orders extends Controller
      */
     public function show(string $id)
     {
-        //
+        return view('orders.show', [ 'order' => Order::findOrFail($id) ]);
     }
 
     /**
@@ -106,12 +106,20 @@ class Orders extends Controller
     {
         $order = Order::findOrFail($id);
         if ($order->status == OrderStatus::CREATED) {
-            $order->update(['status' => OrderStatus::COURIER_FOUND]);
 
+            dd(Auth::user()->id);
+            $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id ]);
+
+            $url = env('APP_URL') . "/orders/$id/";
             
-        } else {
-            dump(false);
-        }
-        return view('orders.take');
+            \Telegraph::replaceKeyboard(
+                messageId: $order->message_id, 
+                newKeyboard: Keyboard::make()->buttons([
+                    Button::make(Auth::user()->name)->url($url),
+                ])
+            )->send();
+       }
+
+        return to_route('orders.show', $id);
     }
 }
