@@ -30,6 +30,7 @@ Route::get('/', function(){
 });
 
 Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
+Route::post('orders/get/{id}', [ OrdersC::class, 'get' ])->name('orders.get');
 Route::resource('orders', OrdersC::class);
 Route::get('orders/create/{place}', [ OrdersC::class, 'create' ])->name('orders.create');
 

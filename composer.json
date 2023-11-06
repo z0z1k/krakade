@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "cboden/ratchet": "^0.4.4",
         "defstudio/telegraph": "^1.38",
         "doctrine/dbal": "^3.7",
         "gollumsf/doctrine-tinyint": "^1.0",

@@ -107,7 +107,6 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         if ($order->status == OrderStatus::CREATED) {
 
-            dd(Auth::user()->id);
             $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id ]);
 
             $url = env('APP_URL') . "/orders/$id/";
@@ -120,6 +119,12 @@ class Orders extends Controller
             )->send();
        }
 
+        return to_route('orders.show', $id);
+    }
+
+    public function get($id)
+    {
+        Order::findOrFail($id)->update([ 'status' => OrderStatus::TAKEN, 'get_at' => \Carbon\Carbon::now()->toDateTimeString() ]);
         return to_route('orders.show', $id);
     }
 }
