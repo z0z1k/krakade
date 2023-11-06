@@ -7,8 +7,8 @@
             <th>Телефон клієнта</th>
             <th>Коментар</th>
             <th>Оплата</th>
-            <th>Кур'єр</th>
             <th>Статус</th>
+            <th></th>
         </tr>
 
         @foreach($orders as $order)
@@ -19,8 +19,8 @@
             <td>{{ $order->client_phone }}</td>
             <td>{{ $order->comment }}</td>
             <td>{{ $order->payment_type }}</td>
-            <td>Courier must be here</td>
             <td>{{ $order->status->text() }}</td>
+            <td><a href="{{ route('orders.show', $order->id) }}">Деталі</a></td>
         </tr>
         @endforeach
     </table>

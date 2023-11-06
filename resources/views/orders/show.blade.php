@@ -1,5 +1,4 @@
 <x-layouts.base title="Замовлення">
-{{$order}}
 
 <table class="table table-bordered">
     <tr>
@@ -7,8 +6,12 @@
         <td>{{ $order->status->text() }}</td>
     </tr>
     <tr>
+        <td>Заклад</td>
+        <td>{{ $order->place->name }}</td>
+    </tr>
+    <tr>
         <td>Кур'єр</td>
-        <td>{{ $order->courier->name }}</td>
+        <td>{{ $order->courier->name ?? '' }}</td>
     </tr>
     <tr>
         <td>Адреса</td>
@@ -45,8 +48,8 @@
 </table>
 
 
-<x-form method="post" action="{{ route('orders.get', $order->id) }}">
-    <button class="btn btn-primary">Отримав замовлення</button>
+<x-form method="{{ $method }}" action="{{ route($link, $order->id) }}">
+    <button class="btn btn-primary">{{ $text }}</button>
 </x-form>
 
 </x-layouts.base>

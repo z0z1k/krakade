@@ -28,9 +28,13 @@ use App\Http\Controllers\Registration as RegistrationC;
 Route::get('/', function(){
     return view('home');
 });
+Route::get('/info', function(){
+    return view('info');
+})->name('info');
 
 Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
 Route::post('orders/get/{id}', [ OrdersC::class, 'get' ])->name('orders.get');
+Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
 Route::resource('orders', OrdersC::class);
 Route::get('orders/create/{place}', [ OrdersC::class, 'create' ])->name('orders.create');
 

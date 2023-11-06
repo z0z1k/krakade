@@ -46,11 +46,14 @@
                             <li>
                                 <a href="{{ route('profile.info') }}" class="nav-link link-dark">Редагувати профіль</a>
                             </li>
+                        @else                        
                             <li>
                                 <a href="{{ route('registration.create') }}" class="nav-link link-dark">Реєстрація</a>
                             </li>
-                        @else
                         @endif
+                            <li>
+                                <a href="{{ route('info') }}" class="nav-link link-dark">Інформація</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="col col-12 col-md-9">

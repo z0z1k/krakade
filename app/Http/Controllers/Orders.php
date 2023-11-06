@@ -75,7 +75,29 @@ class Orders extends Controller
      */
     public function show(string $id)
     {
-        return view('orders.show', [ 'order' => Order::findOrFail($id) ]);
+        //$link = Order::findOrFail($id)->status == OrderStatus::COURIER_FOUND ?
+        $order = Order::findOrFail($id);
+        switch ($order->status) {
+            case OrderStatus::CREATED:
+                $text = OrderStatus::CREATED->text();
+                break;
+            case OrderStatus::COURIER_FOUND:
+                $link = 'orders.get';
+                $method = 'post';
+                $text = 'Отримав замовлення';
+                break;
+            case OrderStatus::TAKEN:
+                $link = 'orders.delivered';
+                $method = 'post';
+                $text = 'Доставлено';
+                break;
+            default:
+                $link = 'orders.show';
+                $method = 'get';
+                $text = 'Замовлення закрите';
+                break;
+        }
+        return view('orders.show', compact('order', 'link', 'method', 'text'));
     }
 
     /**
@@ -125,6 +147,14 @@ class Orders extends Controller
     public function get($id)
     {
         Order::findOrFail($id)->update([ 'status' => OrderStatus::TAKEN, 'get_at' => \Carbon\Carbon::now()->toDateTimeString() ]);
+        return to_route('orders.show', $id);
+    }
+
+    public function delivered($id)
+    {
+        $order = Order::findOrFail($id);
+        \Telegraph::deleteMessage($order->message_id)->send();
+        $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => \Carbon\Carbon::now()->toDateTimeString() ]);
         return to_route('orders.show', $id);
     }
 }
