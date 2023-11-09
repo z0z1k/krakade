@@ -20,6 +20,10 @@
         <button class="btn btn-primary">Редагувати</button>
         @endbind
     </x-form>
+
+    <x-form method="put" action="{{ route('generatetoken') }}">
+    <button>generate</button>
+    </x-from>
     
     <a href="{{ route('profile.password.edit') }}">Змінити пароль</a>
     

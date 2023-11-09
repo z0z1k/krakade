@@ -9,9 +9,9 @@
                 <p class="card-text">
                     {{ $order->client_address }}<br>
                     {{ $order->client_phone }}<br>
-                    @can('place')<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">-5хв</a>@endif
+                    @can('place')<a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">-5хв</a>@endif
                     {{ $order->be_ready }}
-                    @can('place')<a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">+5хв</a>@endif
+                    @can('place')<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">+5хв</a>@endif
                     <br>
                     {{ $order->comment }}<br>
                     {{ $order->payment_type }}<br>

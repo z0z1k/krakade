@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\Session;
 
 use App\Http\Controllers\Profile\Info as ProfileInfo;
 use App\Http\Controllers\Profile\Password as ProfilePassword;
+use App\Http\Controllers\Profile\GenerateToken as ApiGenTokenC;
 
 use App\Http\Controllers\Registration as RegistrationC;
 /*
@@ -36,7 +37,7 @@ Route::get('/info', function(){
 Route::middleware('auth')->group(function(){
 
     Route::middleware('can:courier')->group(function(){
-        Route::get('orders/{id}/take', [ OrdersC::class, 'take' ])->name('orders.take');
+        Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
         Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
         Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
     });
@@ -45,7 +46,7 @@ Route::middleware('auth')->group(function(){
 
     Route::middleware('can:place')->group(function(){
         Route::get('orders/{place}/create', [ OrdersC::class, 'create' ])->name('orders.create');
-        Route::get('orders//{id}plusTime', [ OrdersC::class, 'plusTime' ])->name('orders.plusTime');
+        Route::get('orders/{id}/plusTime', [ OrdersC::class, 'plusTime' ])->name('orders.plusTime');
         Route::get('orders/{id}/minusTime', [ OrdersC::class, 'minusTime' ])->name('orders.minusTime');   
         Route::resource('places', PlacesC::class);
     });
@@ -60,8 +61,11 @@ Route::middleware('auth')->group(function(){
         Route::controller(ProfilePassword::class)->group(function(){
             Route::get('/password', 'edit')->name('profile.password.edit');
             Route::put('/password', 'update')->name('profile.password.update');
-        });    
-    
+        });
+        
+        
+        Route::put('/gentoken', [ ApiGenTokenC::class, 'update'])->name('generatetoken');
+
         Route::controller(ProfileInfo::class)->group(function(){
             Route::get('/info', 'show')->name('profile.info');
             Route::put('/info', 'update')->name('profile.update');

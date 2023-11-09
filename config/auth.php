@@ -69,6 +69,12 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => true,
+        ],
     ],
 
     /*

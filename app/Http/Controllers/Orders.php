@@ -17,6 +17,8 @@ use App\Enums\Order\Status as OrderStatus;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
+use Carbon\Carbon;
+
 class Orders extends Controller
 {
     /**
@@ -70,6 +72,10 @@ class Orders extends Controller
                 Button::make('Взяти замовлення')->url($url),
             ])
         )->send();
+
+        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
+        $client->text("order_created");
+        $client->close();
 
         return redirect()->route('orders.index')->with('message', 'order.created');
 
@@ -125,6 +131,10 @@ class Orders extends Controller
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
         Order::findOrFail($id)->update($data);
 
+        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
+        $client->text("order_updated");
+        $client->close();
+
         return to_route('orders.index')->with('message', 'order.updated');
     }
 
@@ -153,12 +163,22 @@ class Orders extends Controller
             )->send();
        }
 
+        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
+        $client->text("order_updated");
+        $client->close();
+       
+
         return to_route('orders.show', $id);
     }
 
     public function get($id)
     {
-        Order::findOrFail($id)->update([ 'status' => OrderStatus::TAKEN, 'get_at' => \Carbon\Carbon::now()->toDateTimeString() ]);
+        Order::findOrFail($id)->update([ 'status' => OrderStatus::TAKEN, 'get_at' => Carbon::now()->toDateTimeString() ]);
+        
+        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
+        $client->text("order_updated");
+        $client->close();
+        
         return to_route('orders.show', $id);
     }
 
@@ -166,17 +186,36 @@ class Orders extends Controller
     {
         $order = Order::findOrFail($id);
         \Telegraph::deleteMessage($order->message_id)->send();
-        $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => \Carbon\Carbon::now()->toDateTimeString() ]);
+        $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now()->toDateTimeString() ]);
+        
+        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
+        $client->text("order_updated");
+        $client->close();
+        
         return to_route('orders.show', $id);
     }
 
     public function plusTime($id)
     {
-        dump(Order::findOrFail($id)->be_ready);
+        $order = Order::findOrFail($id);
+        $order->update([ 'be_ready' => Carbon::parse($order->be_ready)->addMinutes(5)->toTimeString() ]);
+        
+        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
+        $client->text("order_updated");
+        $client->close();
+        
+        return to_route('orders.index');
     }
 
     public function minusTime($id)
     {
+        $order = Order::findOrFail($id);
+        $order->update([ 'be_ready' => Carbon::parse($order->be_ready)->subMinutes(5)->toTimeString() ]);
         
+        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
+        $client->text("order_updated");
+        $client->close();
+        
+        return to_route('orders.index');
     }
 }

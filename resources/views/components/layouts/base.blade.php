@@ -84,4 +84,5 @@
         </footer>
     </div>
 </body>
+@vite(['resources/js/websocket.js'])
 </html>
