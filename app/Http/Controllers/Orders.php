@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\Orders\Store as StoreRequest;
+use App\Http\Requests\Orders\Store as OrdersRequest;
 
 use App\Models\Order;
 use App\Models\Place;
@@ -15,6 +15,7 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 use App\Enums\Order\Status as OrderStatus;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Orders extends Controller
 {
@@ -23,7 +24,11 @@ class Orders extends Controller
      */
     public function index()
     {
-        return view('orders.index', [ 'orders' => Order::all()]);
+        $orders = Gate::allows('courier') ?
+            Order::whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->get() :
+            OrderM::whereIn('place_id', PlaceM::where('user_id', Auth::user()->id)->pluck('id'))
+            ->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->get();
+        return view('orders.index', [ 'orders' => $orders]);
     }
 
     /**
@@ -37,7 +42,7 @@ class Orders extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request)
+    public function store(OrdersRequest $request)
     {
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');        
 
@@ -79,6 +84,8 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         switch ($order->status) {
             case OrderStatus::CREATED:
+                $link = 'orders.show';
+                $method = 'get';
                 $text = OrderStatus::CREATED->text();
                 break;
             case OrderStatus::COURIER_FOUND:
@@ -105,15 +112,20 @@ class Orders extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return view('orders.edit', [ 'order' => Order::findOrFail($id) ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(OrdersRequest $request, string $id)
     {
-        //
+        $request->validated();
+
+        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
+        Order::findOrFail($id)->update($data);
+
+        return to_route('orders.index')->with('message', 'order.updated');
     }
 
     /**
@@ -156,5 +168,15 @@ class Orders extends Controller
         \Telegraph::deleteMessage($order->message_id)->send();
         $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => \Carbon\Carbon::now()->toDateTimeString() ]);
         return to_route('orders.show', $id);
+    }
+
+    public function plusTime($id)
+    {
+        dump(Order::findOrFail($id)->be_ready);
+    }
+
+    public function minusTime($id)
+    {
+        
     }
 }

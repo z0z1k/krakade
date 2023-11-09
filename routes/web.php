@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\Telegram;
 
 use App\Http\Controllers\Orders as OrdersC;
+
 use App\Http\Controllers\Users as UsersC;
 use App\Http\Controllers\Places as PlacesC;
 use App\Http\Controllers\Auth\Session;
@@ -32,28 +33,39 @@ Route::get('/info', function(){
     return view('info');
 })->name('info');
 
-Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
-Route::post('orders/get/{id}', [ OrdersC::class, 'get' ])->name('orders.get');
-Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
-Route::resource('orders', OrdersC::class);
-Route::get('orders/create/{place}', [ OrdersC::class, 'create' ])->name('orders.create');
+Route::middleware('auth')->group(function(){
 
-Route::resource('places', PlacesC::class);
+    Route::middleware('can:courier')->group(function(){
+        Route::get('orders/{id}/take', [ OrdersC::class, 'take' ])->name('orders.take');
+        Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
+        Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
+    });
 
-Route::resource('users', UsersC::class);
-Route::get('users/{id}/roles', [ UsersC::class, 'roles' ])->name('users.roles');
-Route::put('users/{id}/roles', [ UsersC::class, 'saveRoles']);
+    Route::resource('orders', OrdersC::class);
 
-Route::prefix('profile')->group(function(){
-    Route::controller(ProfilePassword::class)->group(function(){
-        Route::get('/password', 'edit')->name('profile.password.edit');
-        Route::put('/password', 'update')->name('profile.password.update');
+    Route::middleware('can:place')->group(function(){
+        Route::get('orders/{place}/create', [ OrdersC::class, 'create' ])->name('orders.create');
+        Route::get('orders//{id}plusTime', [ OrdersC::class, 'plusTime' ])->name('orders.plusTime');
+        Route::get('orders/{id}/minusTime', [ OrdersC::class, 'minusTime' ])->name('orders.minusTime');   
+        Route::resource('places', PlacesC::class);
     });
     
-
-    Route::controller(ProfileInfo::class)->group(function(){
-        Route::get('/info', 'show')->name('profile.info');
-        Route::put('/info', 'update')->name('profile.update');
+    Route::middleware('can:admin')->group(function(){
+        Route::resource('users', UsersC::class);
+        Route::get('users/{id}/roles', [ UsersC::class, 'roles' ])->name('users.roles');
+        Route::put('users/{id}/roles', [ UsersC::class, 'saveRoles']);
+    });
+    
+    Route::prefix('profile')->group(function(){
+        Route::controller(ProfilePassword::class)->group(function(){
+            Route::get('/password', 'edit')->name('profile.password.edit');
+            Route::put('/password', 'update')->name('profile.password.update');
+        });    
+    
+        Route::controller(ProfileInfo::class)->group(function(){
+            Route::get('/info', 'show')->name('profile.info');
+            Route::put('/info', 'update')->name('profile.update');
+        });
     });
 });
 
@@ -67,6 +79,9 @@ Route::controller(Session::class)->group(function(){
         Route::delete('/auth/logout', 'destroy')->name('login.destroy');
     });
 });
-
-Route::get('register', [ RegistrationC::class, 'create' ])->name('registration.create');
-Route::post('register', [ RegistrationC::class, 'store' ])->name('registration.store');
+Route::controller(RegistrationC::class)->group(function(){
+    Route::middleware('guest')->group(function(){
+        Route::get('register', 'create')->name('registration.create');
+        Route::post('register', 'store')->name('registration.store');
+    });
+});

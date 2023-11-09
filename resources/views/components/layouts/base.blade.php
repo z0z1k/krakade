@@ -31,18 +31,29 @@
                     <div class="col col-12 col-md-3">
                         <ul class="nav nav-pills flex-column mb-auto">    
                         @auth
+                            @can('courier', 'place')
                             <li>
                                 <a href="{{ route('orders.index') }}" class="nav-link link-dark">Активні замовлення</a>
+                            </li>
+                            @endif
+                            @can('place')
+                            <li>
+                                <a href="#" class="nav-link link-dark">Виконані замовлення</a>
                             </li>
                             <li>
                                 <a href="{{ route('places.index') }}" class="nav-link link-dark">Заклади</a>
                             </li>
+                            @foreach(\App\Models\Place::where('user_id', Auth::user()->id)->get() as $place)                                
                             <li>
-                                <a href="{{ route('places.create') }}" class="nav-link link-dark">Додати заклад</a>
+                                <a href="{{ route('orders.create', $place->id) }}" class="nav-link link-dark">{{$place->name}}</a>
                             </li>
+                            @endforeach
+                            @endif
+                            @can('admin')
                             <li>
                                 <a href="{{ route('users.index') }}" class="nav-link link-dark">Користувачі</a>
                             </li>
+                            @endif
                             <li>
                                 <a href="{{ route('profile.info') }}" class="nav-link link-dark">Редагувати профіль</a>
                             </li>
