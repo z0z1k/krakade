@@ -28,9 +28,9 @@ class Orders extends Controller
     {
         $orders = Gate::allows('courier') ?
             Order::whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->get() :
-            OrderM::whereIn('place_id', PlaceM::where('user_id', Auth::user()->id)->pluck('id'))
+            Order::whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))
             ->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->get();
-        return view('orders.index', [ 'orders' => $orders]);
+        return view('orders.index', compact('orders'));
     }
 
     /**

@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -69,12 +74,6 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
-
-        'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
-            'hash' => true,
-        ],
     ],
 
     /*

@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function(){
         Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
         Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
     });
-
+    
     Route::resource('orders', OrdersC::class);
 
     Route::middleware('can:place')->group(function(){
