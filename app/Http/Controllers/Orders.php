@@ -27,10 +27,7 @@ class Orders extends Controller
      */
     public function index()
     {
-        $orders = Gate::allows('courier') ?
-            Order::whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->get() :
-            Order::whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))
-            ->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->get();
+        $orders = Gate::allows('courier') ? Order::activeCourier()->get() : Order::activePlace()->get();
         return view('orders.index', compact('orders'));
     }
 
@@ -48,8 +45,8 @@ class Orders extends Controller
     public function store(OrdersRequest $request)
     {
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
-
-        $message = $this->sendMessage($data);
+        $data['message'] = $this->generateMessage($data);
+        $message = $this->sendMessage($data['message']);
         $data['message_id'] = $message->telegraphMessageId();
         $id = Order::create($data)->id;
 
@@ -106,11 +103,19 @@ class Orders extends Controller
     {
         $request->validated();
 
-        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
         $order = Order::findOrFail($id);
-        $order->update($data);
 
-        \Telegraph::reply($order->message_id)->message("new text")->send();
+        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
+        $data['message'] = $this->generateMessage($data + [ 'place_id' => $order->place_id]);
+        if(!str_contains($data['message'], 'Оновлення!')){
+            $data['message']  = 'Оновлення! ' . $data['message'];
+        }
+        $this->deleteMessage($order->message_id);
+        $message = $this->sendMessage($data['message']);
+        $data['message_id'] = $message->telegraphMessageId();
+        $text = $order->courier->name ?? $order->status->text();
+        $this->updateKeyboard($id, $data['message_id'], $text);
+        $order->update($data);
 
         $this->wsMessage('order_updated');
 
@@ -141,9 +146,10 @@ class Orders extends Controller
 
     public function get($id)
     {
-        Order::findOrFail($id)->update([ 'status' => OrderStatus::TAKEN, 'get_at' => Carbon::now()->toDateTimeString() ]);
-        
-        $this->wsMessage('order_updated'); 
+        $order = Order::findOrFail($id);
+        $this->updateKeyboard($order->id, $order->message_id, OrderStatus::TAKEN->text());
+        $order->update([ 'status' => OrderStatus::TAKEN, 'get_at' => Carbon::now()->toDateTimeString() ]);
+                $this->wsMessage('order_updated'); 
            
         return to_route('orders.show', $id);
     }
@@ -151,7 +157,7 @@ class Orders extends Controller
     public function delivered($id)
     {
         $order = Order::findOrFail($id);
-        \Telegraph::deleteMessage($order->message_id)->send();
+        $this->deleteMessage($id);
         $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now()->toDateTimeString() ]);
         
         $this->wsMessage('order_updated');
@@ -161,27 +167,37 @@ class Orders extends Controller
 
     public function plusTime($id)
     {
-        $order = Order::findOrFail($id);
-        $order->update([ 'be_ready' => Carbon::parse($order->be_ready)->addMinutes(5)->toTimeString() ]);
-        
-        $this->wsMessage('order_updated');
-        
-        return to_route('orders.index');
+        $this->updateTime($id, 'addMinutes');
     }
 
     public function minusTime($id)
     {
-        $order = Order::findOrFail($id);
-        $order->update([ 'be_ready' => Carbon::parse($order->be_ready)->subMinutes(5)->toTimeString() ]);
-        
+        $this->updateTime($id, 'subMinutes');
+    }
+
+    protected function updateTime($id, $method, $count = 5)
+    {
+        $order = Order::findOrFail($id);        
+        $time = Carbon::parse($order->be_ready)->$method($count)->format('H:i');
+
+        $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", $time, $order->message);
+        if(!str_contains($message, 'Оновлення!')){
+            $message  = 'Оновлення! ' . $message;
+        }
+        $this->deleteMessage($order->message_id);
+        $response = $this->sendMessage($message);
+        $text = $order->courier->name ?? $order->status->text();
+        $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
+     
+        $order->update([ 'be_ready' =>  $time, 'message' => $message, 'message_id' => $response->telegraphMessageId()]);
         $this->wsMessage('order_updated');
         
         return to_route('orders.index');
     }
 
-    protected function sendMessage($data)
+    protected function sendMessage($message)
     {
-        $response = \Telegraph::html($this->generateMessage($data))->send();
+        $response = \Telegraph::html($message)->send();
 
         return $response;
     }
@@ -194,6 +210,11 @@ class Orders extends Controller
         return $message;
     }
 
+    public function replyMessage($id, $reply)
+    {
+        \Telegraph::message($reply)->reply($id)->send();
+    }
+
     protected function updateKeyboard($orderId, $messageId, $text)
     {
         $url = env('APP_URL') . '/orders/take/' . $orderId;
@@ -204,6 +225,11 @@ class Orders extends Controller
                 Button::make($text)->url($url),
             ])
         )->send();
+    }
+
+    protected function deleteMessage($id)
+    {
+        \Telegraph::deleteMessage($id)->send();   
     }
 
     protected function wsMessage($message)

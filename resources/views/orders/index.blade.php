@@ -20,8 +20,13 @@
                 </p>
                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>
                 
-                <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-outline-dark">Редагувати</a>
-            </div>
+                @can('place')
+                    <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-outline-dark">Редагувати</a>
+                @endif
+                @can('courier')
+                    
+                @endif
+                </div>
         </div>
     </div>
     @endforeach
