@@ -157,7 +157,7 @@ class Orders extends Controller
     public function delivered($id)
     {
         $order = Order::findOrFail($id);
-        $this->deleteMessage($id);
+        $this->deleteMessage($order->message_id);
         $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now()->toDateTimeString() ]);
         
         $this->wsMessage('order_updated');
@@ -173,6 +173,17 @@ class Orders extends Controller
     public function minusTime($id)
     {
         $this->updateTime($id, 'subMinutes');
+    }
+
+    public function cancel($id)
+    {
+        $order = Order::findOrFail($id);
+        $this->deleteMessage($order->message_id);
+        $order->update([ 'status' => OrderStatus::CANCELLED ]);
+        
+        $this->wsMessage('order_updated');
+        
+        return to_route('orders.index')->with('message', 'order.cancelled');
     }
 
     protected function updateTime($id, $method, $count = 5)

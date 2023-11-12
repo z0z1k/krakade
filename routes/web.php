@@ -41,13 +41,14 @@ Route::middleware('auth')->group(function(){
         Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
         Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
     });
-    
+
     Route::resource('orders', OrdersC::class);
 
     Route::middleware('can:place')->group(function(){
         Route::get('orders/{place}/create', [ OrdersC::class, 'create' ])->name('orders.create');
         Route::get('orders/{id}/plusTime', [ OrdersC::class, 'plusTime' ])->name('orders.plusTime');
-        Route::get('orders/{id}/minusTime', [ OrdersC::class, 'minusTime' ])->name('orders.minusTime');   
+        Route::get('orders/{id}/minusTime', [ OrdersC::class, 'minusTime' ])->name('orders.minusTime');
+        Route::put('orders/{id}/cancel', [ OrdersC::class, 'cancel'])->name('orders.cancel');
         Route::resource('places', PlacesC::class);
     });
     

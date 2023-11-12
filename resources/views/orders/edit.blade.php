@@ -25,8 +25,10 @@
         <div class="mb-3">
                 <button class="btn btn-primary">Редагувати</button>
         </div>
-        
-        <a href="#" class="btn btn-outline-danger">Скасувати замовлення</a>
+
     </x-form>
     @endbind
+    <x-form method="put" action="{{ route('orders.cancel', $order->id) }}">
+        <button class="btn btn-outline-danger">Скасувати замовлення</button>
+    </x-form>
 </x-layouts.base>

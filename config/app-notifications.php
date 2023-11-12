@@ -13,4 +13,8 @@ return [
         'type' => 'danger',
         'text' => 'Помилка створення замовлення'
     ],
+    'order.cancelled' => [
+        'type' => 'danger',
+        'text' => 'Замовлення скасоване'
+    ]
 ];
