@@ -21,6 +21,7 @@ use Carbon\Carbon;
 
 class Orders extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      */
@@ -46,38 +47,16 @@ class Orders extends Controller
      */
     public function store(OrdersRequest $request)
     {
-        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');        
+        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
 
-        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ " . $data['client_address'] ."</strong>";
-        $message .= "\n{$data['be_ready']}, {$data['client_phone']}, {$data['payment_type']}\n{$data['comment']}";
-        
-        $url = env('APP_URL') . '/orders/take/';
-
-        $response = \Telegraph::html($message)->keyboard(Keyboard::make()->buttons([
-            Button::make('Взяти замовлення')->url($url),
-        ]))->send();
-
-        if (!$response->telegraphOk()) {            
-            return redirect()->back()->with('message', 'order.error');
-        }
-
-        $data['message_id'] = $response->telegraphMessageId();
+        $message = $this->sendMessage($data);
+        $data['message_id'] = $message->telegraphMessageId();
         $id = Order::create($data)->id;
 
-        $url .= $id;
+        $this->updateKeyboard($id, $data['message_id'], 'Взяти замовлення');
+        $this->wsMessage('order_created');
 
-        \Telegraph::replaceKeyboard(
-            messageId: $data['message_id'], 
-            newKeyboard: Keyboard::make()->buttons([
-                Button::make('Взяти замовлення')->url($url),
-            ])
-        )->send();
-
-        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
-        $client->text("order_created");
-        $client->close();
-
-        return redirect()->route('orders.index')->with('message', 'order.created');
+        return to_route('orders.index')->with('message', 'order.created');
 
     }
 
@@ -86,7 +65,6 @@ class Orders extends Controller
      */
     public function show(string $id)
     {
-        //$link = Order::findOrFail($id)->status == OrderStatus::COURIER_FOUND ?
         $order = Order::findOrFail($id);
         switch ($order->status) {
             case OrderStatus::CREATED:
@@ -129,11 +107,12 @@ class Orders extends Controller
         $request->validated();
 
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
-        Order::findOrFail($id)->update($data);
+        $order = Order::findOrFail($id);
+        $order->update($data);
 
-        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
-        $client->text("order_updated");
-        $client->close();
+        \Telegraph::reply($order->message_id)->message("new text")->send();
+
+        $this->wsMessage('order_updated');
 
         return to_route('orders.index')->with('message', 'order.updated');
     }
@@ -149,25 +128,14 @@ class Orders extends Controller
     public function take($id)
     {
         $order = Order::findOrFail($id);
-        if ($order->status == OrderStatus::CREATED) {
+        if ($order->status != OrderStatus::CREATED) {
+            return to_route('orders.show', $id);
+        }
 
-            $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id ]);
+        $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id ]);
+        $this->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
 
-            $url = env('APP_URL') . "/orders/$id/";
-            
-            \Telegraph::replaceKeyboard(
-                messageId: $order->message_id, 
-                newKeyboard: Keyboard::make()->buttons([
-                    Button::make(Auth::user()->name)->url($url),
-                ])
-            )->send();
-       }
-
-        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
-        $client->text("order_updated");
-        $client->close();
-       
-
+        $this->wsMessage('order_updated');
         return to_route('orders.show', $id);
     }
 
@@ -175,10 +143,8 @@ class Orders extends Controller
     {
         Order::findOrFail($id)->update([ 'status' => OrderStatus::TAKEN, 'get_at' => Carbon::now()->toDateTimeString() ]);
         
-        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
-        $client->text("order_updated");
-        $client->close();
-        
+        $this->wsMessage('order_updated'); 
+           
         return to_route('orders.show', $id);
     }
 
@@ -188,9 +154,7 @@ class Orders extends Controller
         \Telegraph::deleteMessage($order->message_id)->send();
         $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now()->toDateTimeString() ]);
         
-        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
-        $client->text("order_updated");
-        $client->close();
+        $this->wsMessage('order_updated');
         
         return to_route('orders.show', $id);
     }
@@ -200,9 +164,7 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         $order->update([ 'be_ready' => Carbon::parse($order->be_ready)->addMinutes(5)->toTimeString() ]);
         
-        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
-        $client->text("order_updated");
-        $client->close();
+        $this->wsMessage('order_updated');
         
         return to_route('orders.index');
     }
@@ -212,10 +174,42 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         $order->update([ 'be_ready' => Carbon::parse($order->be_ready)->subMinutes(5)->toTimeString() ]);
         
-        $client = new \WebSocket\Client("ws://192.168.0.116:8080");
-        $client->text("order_updated");
-        $client->close();
+        $this->wsMessage('order_updated');
         
         return to_route('orders.index');
+    }
+
+    protected function sendMessage($data)
+    {
+        $response = \Telegraph::html($this->generateMessage($data))->send();
+
+        return $response;
+    }
+
+    protected function generateMessage($data)
+    {
+        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ " . $data['client_address'] ."</strong>";
+        $message .= "\n{$data['be_ready']}, {$data['client_phone']}, {$data['payment_type']}\n{$data['comment']}";
+
+        return $message;
+    }
+
+    protected function updateKeyboard($orderId, $messageId, $text)
+    {
+        $url = env('APP_URL') . '/orders/take/' . $orderId;
+
+        \Telegraph::replaceKeyboard(
+            messageId: $messageId, 
+            newKeyboard: Keyboard::make()->buttons([
+                Button::make($text)->url($url),
+            ])
+        )->send();
+    }
+
+    protected function wsMessage($message)
+    {
+        $client = new \WebSocket\Client(env('WS_URL'));
+        $client->text($message);
+        $client->close();
     }
 }

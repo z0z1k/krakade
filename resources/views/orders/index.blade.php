@@ -26,4 +26,5 @@
     </div>
     @endforeach
 </div>
+@vite(['resources/js/websocket.js'])
 </x-layouts.base>
