@@ -1,4 +1,4 @@
-<x-layouts.base title="Усі замовлення">
+<x-layouts.base title="{{ $title }}">
 <div class="row">
     @foreach($orders as $order)
     
@@ -9,22 +9,25 @@
                 <p class="card-text">
                     {{ $order->client_address }}<br>
                     {{ $order->client_phone }}<br>
-                    @can('place')<a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">-5хв</a>@endif
+                    @if($place)<a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">-5хв</a>@endif
                     {{ $order->be_ready }}
-                    @can('place')<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">+5хв</a>@endif
+                    @if($place)<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">+5хв</a>@endif
                     <br>
                     {{ $order->comment }}<br>
                     {{ $order->payment_type }}<br>
+                    <span class="badge text-bg-info">
                     {{ $order->status->text() }}<br>
                     {{ $order->courier->name ?? '' }}
+                    {{ $order->courier->phone ?? ''}}
+                    </span>
                 </p>
                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>
                 
-                @can('place')
+                @if($place)
                     <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-outline-dark">Редагувати</a>
                 @endif
-                @can('courier')
-                    
+                @if($courier)
+
                 @endif
                 </div>
         </div>

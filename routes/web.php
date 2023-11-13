@@ -16,6 +16,8 @@ use App\Http\Controllers\Profile\Password as ProfilePassword;
 use App\Http\Controllers\Profile\GenerateToken as ApiGenTokenC;
 
 use App\Http\Controllers\Registration as RegistrationC;
+
+use App\Http\Controllers\Courier\Stats as CourierStatsC;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -36,21 +38,24 @@ Route::get('/info', function(){
 
 Route::middleware('auth')->group(function(){
 
+    Route::get('courier/{id}', [ CourierStatsC::class, 'show' ])->name('courier.show');
+
     Route::middleware('can:courier')->group(function(){
         Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
         Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
         Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
     });
 
-    Route::resource('orders', OrdersC::class);
-
     Route::middleware('can:place')->group(function(){
+        Route::get('orders/cancelled', [ OrdersC::class, 'cancelled' ])->name('orders.cancelled');
         Route::get('orders/{place}/create', [ OrdersC::class, 'create' ])->name('orders.create');
         Route::get('orders/{id}/plusTime', [ OrdersC::class, 'plusTime' ])->name('orders.plusTime');
         Route::get('orders/{id}/minusTime', [ OrdersC::class, 'minusTime' ])->name('orders.minusTime');
         Route::put('orders/{id}/cancel', [ OrdersC::class, 'cancel'])->name('orders.cancel');
         Route::resource('places', PlacesC::class);
     });
+
+    Route::resource('orders', OrdersC::class);
     
     Route::middleware('can:admin')->group(function(){
         Route::resource('users', UsersC::class);

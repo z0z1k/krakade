@@ -31,12 +31,20 @@
                     <div class="col col-12 col-md-3">
                         <ul class="nav nav-pills flex-column mb-auto">    
                         @auth
+                            @can('courier')
+                            <li>
+                                <a href="{{ route('courier.show', Auth::user()->id) }}" class="nav-link link-dark">Статистика</a>
+                            </li>
+                            @endif
                             @can('courier', 'place')
                             <li>
                                 <a href="{{ route('orders.index') }}" class="nav-link link-dark">Активні замовлення</a>
                             </li>
                             @endif
                             @can('place')
+                            <li>
+                                <a href="{{ route('orders.cancelled') }}" class="nav-link link-dark">Скасовані замовлення</a>
+                            </li>
                             <li>
                                 <a href="#" class="nav-link link-dark">Виконані замовлення</a>
                             </li>

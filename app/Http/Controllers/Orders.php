@@ -28,7 +28,15 @@ class Orders extends Controller
     public function index()
     {
         $orders = Gate::allows('courier') ? Order::activeCourier()->get() : Order::activePlace()->get();
-        return view('orders.index', compact('orders'));
+        $courier = Gate::allows('courier') ? true : false;
+        $place = Gate::allows('place') ? true : false;
+        $title = 'Активні замовлення';
+        return view('orders.index', compact('orders', 'title', 'courier', 'place'));
+    }
+
+    public function cancelled()
+    {
+        return view('orders.index', [ 'orders' => Order::cancelled()->get(), 'title' => 'Скасовані замовлення' ]);
     }
 
     /**
