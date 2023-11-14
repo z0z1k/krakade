@@ -40,11 +40,22 @@ Route::middleware('auth')->group(function(){
 
     Route::get('courier/{id}', [ CourierStatsC::class, 'show' ])->name('courier.show');
 
+    Route::get('orders/index', [OrdersC::class, 'index'])->name('orders.index');
+    Route::get('orders/{id}/show', [OrdersC::class, 'show'])->name('orders.show');
+    Route::get('orders/{id}/edit', [OrdersC::class, 'edit'])->name('orders.edit');
+    Route::post('orders/store', [OrdersC::class, 'store'])->name('orders.store');
+    Route::put('orders/{id}/update', [OrdersC::class, 'update'])->name('orders.update');
+
     Route::middleware('can:courier')->group(function(){
         Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
         Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
-        Route::post('orders/delivered/{id}', [ OrdersC::class, 'delivered' ])->name('orders.delivered');
+        Route::post('orders/setDelivered/{id}', [ OrdersC::class, 'setDelivered' ])->name('orders.setDelivered');
+        
+        Route::get('orders/{id}/courierPlusTime', [ OrdersC::class, 'courierPlusTime' ])->name('orders.courierPlusTime');
+        Route::get('orders/{id}/courierMinusTime', [ OrdersC::class, 'courierMinusTime' ])->name('orders.courierMinusTime');
     });
+
+    Route::get('orders/delivered', [ OrdersC::class, 'delivered'])->name('orders.delivered');
 
     Route::middleware('can:place')->group(function(){
         Route::get('orders/cancelled', [ OrdersC::class, 'cancelled' ])->name('orders.cancelled');
@@ -52,10 +63,11 @@ Route::middleware('auth')->group(function(){
         Route::get('orders/{id}/plusTime', [ OrdersC::class, 'plusTime' ])->name('orders.plusTime');
         Route::get('orders/{id}/minusTime', [ OrdersC::class, 'minusTime' ])->name('orders.minusTime');
         Route::put('orders/{id}/cancel', [ OrdersC::class, 'cancel'])->name('orders.cancel');
+        Route::get('orders/{id}/ready', [ OrdersC::class, 'ready'])->name('orders.ready');
         Route::resource('places', PlacesC::class);
     });
 
-    Route::resource('orders', OrdersC::class);
+    //Route::resource('orders', OrdersC::class);
     
     Route::middleware('can:admin')->group(function(){
         Route::resource('users', UsersC::class);

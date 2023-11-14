@@ -25,7 +25,7 @@ class Store extends FormRequest
             'client_address' => 'required',
             'client_phone' => 'required',
             'be_ready' => 'required',
-            'payment_type' => '',
+            'payment_type' => 'numeric|nullable',
             'comment' => '',
         ];
     }

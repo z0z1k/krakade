@@ -36,7 +36,17 @@ class Orders extends Controller
 
     public function cancelled()
     {
-        return view('orders.index', [ 'orders' => Order::cancelled()->get(), 'title' => 'Скасовані замовлення' ]);
+        $orders = Order::cancelled()->get();
+        $title = 'Скасовані замовлення';
+        $courier = Gate::allows('courier') ? true : false;
+        $place = Gate::allows('place') ? true : false;
+        return view('orders.cancelled', compact('orders', 'title', 'courier', 'place'));
+    }
+
+    public function delivered()
+    {
+        $orders = Gate::allows('courier') ? Order::deliveredAll()->get() : Order::deliveredPlace()->get();
+        return view('orders.delivered', compact('orders'));
     }
 
     /**
@@ -83,7 +93,7 @@ class Orders extends Controller
                 $text = 'Отримав замовлення';
                 break;
             case OrderStatus::TAKEN:
-                $link = 'orders.delivered';
+                $link = 'orders.setDelivered';
                 $method = 'post';
                 $text = 'Доставлено';
                 break;
@@ -145,7 +155,7 @@ class Orders extends Controller
             return to_route('orders.show', $id);
         }
 
-        $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id ]);
+        $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'courier_arriving_time' => $order->be_ready]);
         $this->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
 
         $this->wsMessage('order_updated');
@@ -156,21 +166,37 @@ class Orders extends Controller
     {
         $order = Order::findOrFail($id);
         $this->updateKeyboard($order->id, $order->message_id, OrderStatus::TAKEN->text());
-        $order->update([ 'status' => OrderStatus::TAKEN, 'get_at' => Carbon::now()->toDateTimeString() ]);
+        $order->update([ 'status' => OrderStatus::TAKEN, 'get_at' => Carbon::now('Europe/Kyiv')->toDateTimeString() ]);
                 $this->wsMessage('order_updated'); 
            
         return to_route('orders.show', $id);
     }
 
-    public function delivered($id)
+    public function setDelivered($id)
     {
         $order = Order::findOrFail($id);
         $this->deleteMessage($order->message_id);
-        $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now()->toDateTimeString() ]);
+        $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now('Europe/Kyiv')->toDateTimeString() ]);
         
         $this->wsMessage('order_updated');
         
         return to_route('orders.show', $id);
+    }
+
+    public function ready($id)
+    {
+        $order = Order::findOrFail($id);
+
+        $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", config('constants.orders.ready'), $order->message);
+        $this->deleteMessage($order->message_id);
+        $response = $this->sendMessage($message);
+        $text = $order->courier->name ?? $order->status->text();
+        $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
+     
+        $order->update(['be_ready' => Carbon::now('Europe/Kyiv')->format('H:i'), 'message' => $message, 'message_id' => $response->telegraphMessageId(), 'ready' => true]);
+        $this->wsMessage('order_updated');
+        
+        return to_route('orders.index');
     }
 
     public function plusTime($id)
@@ -183,6 +209,16 @@ class Orders extends Controller
         $this->updateTime($id, 'subMinutes');
     }
 
+    public function courierPlusTime($id)
+    {
+        $this->courierUpdateTime($id, 'addMinutes');
+    }
+
+    public function courierMinusTime($id)
+    {
+        $this->courierUpdateTime($id, 'subMinutes');
+    }
+
     public function cancel($id)
     {
         $order = Order::findOrFail($id);
@@ -192,6 +228,17 @@ class Orders extends Controller
         $this->wsMessage('order_updated');
         
         return to_route('orders.index')->with('message', 'order.cancelled');
+    }
+
+    protected function courierUpdateTime($id, $method, $count = 5)
+    {
+        $order = Order::findOrFail($id);        
+        $time = Carbon::parse($order->courier_arriving_time)->$method($count)->format('H:i');
+
+        $order->update(['courier_arriving_time' => $time]);
+        $this->wsMessage('order_updated');
+
+        return to_route('orders.index');
     }
 
     protected function updateTime($id, $method, $count = 5)
@@ -223,8 +270,9 @@ class Orders extends Controller
 
     protected function generateMessage($data)
     {
+        $payment = $data['payment_type'] ?? 'Оплата не потрібна';
         $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ " . $data['client_address'] ."</strong>";
-        $message .= "\n{$data['be_ready']}, {$data['client_phone']}, {$data['payment_type']}\n{$data['comment']}";
+        $message .= "\n{$data['be_ready']}, {$data['client_phone']}, {$payment}\n{$data['comment']}";
 
         return $message;
     }

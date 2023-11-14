@@ -13,7 +13,7 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['be_ready', 'client_address', 'client_phone', 'place_id', 'message_id', 'comment', 'payment_type', 'status', 'courier_id', 'get_at', 'delivered_at', 'message'];
+    protected $fillable = ['be_ready', 'client_address', 'client_phone', 'place_id', 'message_id', 'comment', 'payment_type', 'status', 'courier_id', 'get_at', 'delivered_at', 'message', 'ready', 'courier_arriving_time'];
 
     public function place()
     {
@@ -39,6 +39,16 @@ class Order extends Model
     public function scopeCancelled($query)
     {
         return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::CANCELLED);
+    }
+
+    public function scopeDeliveredAll($query)
+    {
+        return $query->where('status', OrderStatus::DELIVERED);
+    }
+
+    public function scopePlace($query)
+    {
+        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::DELIVERED);
     }
 
     protected $casts = [
