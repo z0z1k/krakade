@@ -28,6 +28,10 @@ class Orders extends Controller
     public function index()
     {
         $orders = Gate::allows('courier') ? Order::activeCourier()->get() : Order::activePlace()->get();
+        foreach($orders as &$order) {
+            $order['ready_at'] = Carbon::parse($order->ready_at)->format('H:i');            
+            $order['be_ready'] = Carbon::parse($order->be_ready)->format('H:i');
+        }
         $courier = Gate::allows('courier') ? true : false;
         $place = Gate::allows('place') ? true : false;
         $title = 'Активні замовлення';
@@ -65,10 +69,9 @@ class Orders extends Controller
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
         $data['message'] = $this->generateMessage($data);
         $message = $this->sendMessage($data['message']);
-        $data['message_id'] = $message->telegraphMessageId();
-        $id = Order::create($data)->id;
+        $id = Order::create($data + ['message_id' => $message->telegraphMessageId(), 'ready_at' => $data['be_ready']])->id;
 
-        $this->updateKeyboard($id, $data['message_id'], 'Взяти замовлення');
+        $this->updateKeyboard($id, $message->telegraphMessageId(), 'Взяти замовлення');
         $this->wsMessage('order_created');
 
         return to_route('orders.index')->with('message', 'order.created');
@@ -81,6 +84,9 @@ class Orders extends Controller
     public function show(string $id)
     {
         $order = Order::findOrFail($id);
+        $order['date'] = Carbon::parse($order->created_at)->format('d.m.y D');
+        $order->be_ready = Carbon::parse($order->be_ready)->format('H:i');
+        $order->ready_at = Carbon::parse($order->ready_at)->format('H:i');
         switch ($order->status) {
             case OrderStatus::CREATED:
                 $link = 'orders.show';
@@ -193,7 +199,7 @@ class Orders extends Controller
         $text = $order->courier->name ?? $order->status->text();
         $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
      
-        $order->update(['be_ready' => Carbon::now('Europe/Kyiv')->format('H:i'), 'message' => $message, 'message_id' => $response->telegraphMessageId(), 'ready' => true]);
+        $order->update(['ready_at' => Carbon::now('Europe/Kyiv')->format('H:i'), 'message' => $message, 'message_id' => $response->telegraphMessageId(), 'ready' => true]);
         $this->wsMessage('order_updated');
         
         return to_route('orders.index');
@@ -244,7 +250,7 @@ class Orders extends Controller
     protected function updateTime($id, $method, $count = 5)
     {
         $order = Order::findOrFail($id);        
-        $time = Carbon::parse($order->be_ready)->$method($count)->format('H:i');
+        $time = Carbon::parse($order->ready_at)->$method($count)->format('H:i');
 
         $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", $time, $order->message);
         if(!str_contains($message, 'Оновлення!')){
@@ -255,7 +261,7 @@ class Orders extends Controller
         $text = $order->courier->name ?? $order->status->text();
         $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
      
-        $order->update([ 'be_ready' =>  $time, 'message' => $message, 'message_id' => $response->telegraphMessageId()]);
+        $order->update([ 'ready_at' =>  $time, 'message' => $message, 'message_id' => $response->telegraphMessageId()]);
         $this->wsMessage('order_updated');
         
         return to_route('orders.index');

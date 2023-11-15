@@ -43,5 +43,10 @@ class AuthServiceProvider extends ServiceProvider
             dd($order);
             return Gate::allows('courier') || in_array(Order::findOrFail($id)->place_id, Place::where('user_id', Auth::user()->id)->pluck('id'));
         });*/
+
+        Gate::define('change-order-status', function(User $user, Order $order){
+            dd($order);
+            return Gate::alows('admin') || $order->courier_id == Auth::user()->id;
+        });
     }
 }

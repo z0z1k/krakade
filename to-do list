@@ -1,4 +1,28 @@
-Order view: courier arriving time, get time with taken status
-Order controller: create cancel method, courier arriving time
+Order view: +courier arriving time+, get time with taken status
+Order controller: +create cancel method+, +courier arriving time+
 notifications must be on websockets to
 Rename time methods & routes
+
+navbar add places/create
+
+gates exception
+
+be_ready time always in index view
+
+get_att, delivered_at in view
+
+big order checkbox + comment
+
+Час отримання у клієнта\геморне замовлення
+
+
+Створено
+Перший час приготування
+Реальний час приготування
+Кур'єр приїхав
+
+Кілометраж + ціна\прикручена карта
+
+скіп -> може лише кур'єр, який його взяв, або адмін
+
+admin can register courier

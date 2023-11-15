@@ -11,7 +11,7 @@
 
         <div class="cs-form mb-3">
             <label for="be_ready">Буде готове о:</label>
-            <input type="time" class="form-control" name="be_ready" :value="17:30" value="{{ $order->be_ready }}"/>
+            <input type="time" class="form-control" name="ready_at" value="{{ $order->be_ready }}"/>
         </div>
 
         <div class="mb-3">

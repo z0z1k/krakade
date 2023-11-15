@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'framework' => 'bootstrap-4',
+    'framework' => 'bootstrap-5',
 ];

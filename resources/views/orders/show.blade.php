@@ -1,4 +1,5 @@
 <x-layouts.base title="Замовлення">
+{{ $order->date }}
 
 <table class="table table-bordered">
     <tr>
@@ -18,8 +19,12 @@
         <td>{{ $order->client_address }}</td>
     </tr>
     <tr>
-        <td>Буде готове о</td>
+        <td>Заявлений час приготування</td>
         <td>{{ $order->be_ready }}</td>
+    </tr>
+    <tr>
+        <td>Фактичний час приготування</td>
+        <td>{{ $order->ready_at }}</td>
     </tr>
     <tr>
         <td>Номер клієнта</td>
@@ -35,7 +40,7 @@
     </tr>
     <tr>
         <td>Замовлення створено</td>
-        <td>{{ $order->created_at }}</td>
+        <td>{{ $order->created_at->format('H:i') }}</td>
     </tr>
     <tr>
         <td>Отримано</td>

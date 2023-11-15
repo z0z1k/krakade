@@ -9,12 +9,12 @@
                 <p class="card-text">
                     {{ $order->client_address }}<br>
                     {{ $order->client_phone }}<br>
-                    @if(!$order->ready)
+                    @if(!$order->ready)                    
                     @if($place)<a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">-5хв</a>@endif
-                    {{ $order->be_ready }}
+                    Буде готове {{ $order->ready_at }}
                     @if($place)<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">+5хв</a>@endif
-                    @else
-                    <span class="badge text-bg-success">Замовлення готове</span>
+                    @else                    
+                    <span class="badge text-bg-success">Замовлення готове {{ $order->ready_at }}</span>
                     @endif
                     @if($order->courier_arriving_time != null)
                     <br><span class="badge text-bg-warning">Кур'єр буде о: {{ $order->courier_arriving_time }}</span>
@@ -34,7 +34,9 @@
                     {{ $order->courier->phone ?? ''}}
                     </span>
                     @if(!$order->ready)
+                    @if($place)
                     <a href="{{ route('orders.ready', $order->id)}}"><span class="badge text-bg-success">Позначити готовим</span></a>
+                    @endif
                     @endif
                 </p>
                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>
@@ -45,7 +47,9 @@
                 @if($courier)
 
                 @endif
-                </div>
+
+                <br>Заявлений час приготування: {{ $order->be_ready }}
+          </div>
         </div>
     </div>
     @endforeach
