@@ -19,14 +19,16 @@ use Illuminate\Support\Facades\Gate;
 
 use Carbon\Carbon;
 
+use App\Contracts\Messages;
 class Orders extends Controller
 {
     
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Messages $message)
     {
+        $message->send();
         $orders = Gate::allows('courier') ? Order::activeCourier()->get() : Order::activePlace()->get();
         foreach($orders as &$order) {
             $order['ready_at'] = Carbon::parse($order->ready_at)->format('H:i');            
