@@ -15,4 +15,6 @@
         </tr>
         @endforeach
     </table>
+
+    <a href="{{ route('places.create') }}" class="btn btn-primary">Додати заклад</a>
 </x-layouts.base>

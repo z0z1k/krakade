@@ -11,7 +11,7 @@ class Place extends Model
 
     public $timestamps = false;
 
-    protected $fillable = [ 'name', 'address', 'phone', 'email', 'user_id' ];
+    protected $fillable = [ 'name', 'address', 'phone', 'email', 'user_id', 'location' ];
 
     public function user()
     {

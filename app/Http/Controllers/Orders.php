@@ -22,13 +22,11 @@ use Carbon\Carbon;
 use App\Contracts\Messages;
 class Orders extends Controller
 {
-    
     /**
      * Display a listing of the resource.
      */
-    public function index(Messages $message)
+    public function index()
     {
-        $message->send();
         $orders = Gate::allows('courier') ? Order::activeCourier()->get() : Order::activePlace()->get();
         foreach($orders as &$order) {
             $order['ready_at'] = Carbon::parse($order->ready_at)->format('H:i');            
@@ -66,14 +64,14 @@ class Orders extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OrdersRequest $request)
+    public function store(OrdersRequest $request, Messages $messages)
     {
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
         $data['message'] = $this->generateMessage($data);
-        $message = $this->sendMessage($data['message']);
-        $id = Order::create($data + ['message_id' => $message->telegraphMessageId(), 'ready_at' => $data['be_ready']])->id;
+        $messageId = $messages->send($data['message']);
+        $id = Order::create($data + ['message_id' => $messageId, 'ready_at' => $data['be_ready']])->id;
 
-        $this->updateKeyboard($id, $message->telegraphMessageId(), 'Взяти замовлення');
+        $this->updateKeyboard($id, $messageId, 'Взяти замовлення');
         $this->wsMessage('order_created');
 
         return to_route('orders.index')->with('message', 'order.created');

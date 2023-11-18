@@ -3,6 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Address as AddressC;
+
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,3 +22,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('address/parse', [ AddressC::class, 'parse' ]);
+Route::get('address/calc/{firstLocation}/{secondLocation}', [ AddressC::class, 'calc' ]);

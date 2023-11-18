@@ -4,7 +4,7 @@ namespace App\Contracts;
 
 interface Messages
 {
-    public function send();
+    public function send($message) : int;
     public function delete();
     public function update();
 }
