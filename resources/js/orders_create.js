@@ -26,8 +26,12 @@ function stopDefAction(evt) {
 }
 
 let addressBtn = document.getElementById("addressBtn");
-addressBtn.addEventListener("click", stopDefAction, false);
-addressBtn.addEventListener("click", function(){
+let city = document.getElementById('city');
+let street = document.getElementById('street');
+city.addEventListener("change", parse);
+street.addEventListener("change", parse);
+function parse(){
+    console.log(1);
     let data = {city:document.getElementById('city').value,street:document.getElementById('street').value};
     let placeLocation = document.getElementById("placeLocation").textContent;
     
@@ -39,4 +43,4 @@ addressBtn.addEventListener("click", function(){
                 }).catch(
                 error => console.log(error)
             )
-})
+}

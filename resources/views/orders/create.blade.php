@@ -6,17 +6,15 @@
         <input type="hidden" name="place_id" value="{{$place->id}}">
 
         <div class="row mb-3">
-            <div class="col-12 col-sm-2"><x-form-input name="client_city" id="city" label="Місто" /></div>
+            <div class="col-12 col-sm-3"><x-form-input name="client_city" id="city" label="Місто" /></div>
             <div class="col-12 col-sm-6"><x-form-input name="client_address" id="street" label="Вулиця, будинок" /></div>
-            <div class="col-12 col-sm-2"><x-form-input name="client_address_info" label="Квартира..." /></div>
-            <div class="col-12 col-sm-2"><button class="btn btn-success" id="addressBtn">Send</div>
+            <div class="col-12 col-sm-3"><x-form-input name="client_address_info" label="Квартира..." /></div>
         </div>
         <span id="distance"></div>
 
         <div class="row mb-3">
-            <div class="col-12 col-sm-6"><x-form-input name="client_address" label="Адреса:" /></div>
-            <div class="col-8 col-sm-4"><x-form-input name="client_phone" label="Номер телефону:" /></div>
-            <div class="col-4 col-sm-2">
+            <div class="col-8 col-sm-8"><x-form-input name="client_phone" label="Номер телефону:" /></div>
+            <div class="col-4 col-sm-4">
                 <label for="be_ready">Готове:</label>
                 <input type="time" class="form-control" name="be_ready"/>
             </div>
