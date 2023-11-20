@@ -13,6 +13,11 @@ class Telegram implements Messages
         return $response->telegraphMessageId();
     }
 
+    public function sendMap($loc)
+    {
+        \Telegraph::location(49.502251,25.6130643)->send();
+    }
+
     public function update()
     {
 

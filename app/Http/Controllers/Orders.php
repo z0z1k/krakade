@@ -7,6 +7,7 @@ use App\Http\Requests\Orders\Store as OrdersRequest;
 
 use App\Models\Order;
 use App\Models\Place;
+use App\Models\City;
 
 use DefStudio\Telegraph\Models\TelegraphChat;
 use DefStudio\Telegraph\Keyboard\Button;
@@ -58,14 +59,17 @@ class Orders extends Controller
      */
     public function create($place)
     {
-        return view('orders.create', [ 'place' => Place::findOrFail($place)]);
+        return view('orders.create', [ 'place' => Place::findOrFail($place), 'cities' => City::all()->pluck('city', 'id') ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OrdersRequest $request, Messages $messages)
+    public function store(Request $request, Messages $messages)
     {
+        //dd($request);
+        $messages->sendMap($request->location);
+        /*dd();
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
         $data['message'] = $this->generateMessage($data);
         $messageId = $messages->send($data['message']);
@@ -74,7 +78,7 @@ class Orders extends Controller
         $this->updateKeyboard($id, $messageId, 'Взяти замовлення');
         $this->wsMessage('order_created');
 
-        return to_route('orders.index')->with('message', 'order.created');
+        return to_route('orders.index')->with('message', 'order.created');*/
 
     }
 

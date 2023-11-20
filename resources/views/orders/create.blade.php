@@ -1,16 +1,18 @@
 <x-layouts.base title="Створити замовлення">
+<div id="map"></div>
     <h3>{{$place->name}}</h3>
     <div style="display:none" id="placeLocation">{{ $place->location }}</div>
 
     <x-form method="post" action="{{ route('orders.store') }}">
         <input type="hidden" name="place_id" value="{{$place->id}}">
+        <input type="hidden" name="location" id="location-input">
 
         <div class="row mb-3">
-            <div class="col-12 col-sm-3"><x-form-input name="client_city" id="city" label="Місто" /></div>
+            <div class="col-12 col-sm-3"><x-form-select id="city" name="city" :options="$cities" label="Населений пункт"/></div>
             <div class="col-12 col-sm-6"><x-form-input name="client_address" id="street" label="Вулиця, будинок" /></div>
             <div class="col-12 col-sm-3"><x-form-input name="client_address_info" label="Квартира..." /></div>
         </div>
-        <span id="distance"></div>
+        <span id="distance"><div class="loader"></div></div>
 
         <div class="row mb-3">
             <div class="col-8 col-sm-8"><x-form-input name="client_phone" label="Номер телефону:" /></div>

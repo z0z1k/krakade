@@ -22,11 +22,10 @@ class Store extends FormRequest
     public function rules(): array
     {
         return [
-            'client_address' => 'required',
+            'city' => 'required',
+            'client_address' => 'requried',
+            'client_address_info' => 'required',
             'client_phone' => 'required',
-            'be_ready' => 'required',
-            'payment_type' => 'numeric|nullable',
-            'comment' => '',
         ];
     }
 }

@@ -25,6 +25,11 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
     public function scopeActiveCourier($query)
     {
         return $query->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->with('place', 'courier', 'place');
