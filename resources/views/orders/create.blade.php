@@ -17,8 +17,13 @@
         <div class="row mb-3">
             <div class="col-8 col-sm-8"><x-form-input name="client_phone" label="Номер телефону:" /></div>
             <div class="col-4 col-sm-4">
-                <label for="be_ready">Готове:</label>
-                <input type="time" class="form-control" name="be_ready"/>
+                <label for="approximate_ready_at">Готове:</label>
+                <input type="time" class="form-control @error('approximate_ready_at') is-invalid @enderror" name="approximate_ready_at"/>
+                @error('approximate_ready_at')
+                <div class="invalid-feedback">
+                {{ $message }}
+                </div>
+                @enderror
             </div>
         </div>
         

@@ -65,9 +65,10 @@ class Orders extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Messages $messages)
+    public function store(OrdersRequest $request, Messages $messages)
     {
-        //dd($request);
+        $request->validated();
+        dd($request);
         $messages->sendMap($request->location);
         /*dd();
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');

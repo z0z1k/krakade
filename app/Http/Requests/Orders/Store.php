@@ -23,9 +23,10 @@ class Store extends FormRequest
     {
         return [
             'city' => 'required',
-            'client_address' => 'requried',
+            'client_address' => 'required',
             'client_address_info' => 'required',
             'client_phone' => 'required',
+            'approximate_ready_at' => 'required',
         ];
     }
 }
