@@ -1,6 +1,9 @@
 let payment = document.getElementById('payment-checkbox');
 let paymentDiv = document.getElementById('payment-div');
 
+if (payment.checked) {
+  paymentDiv.style.display = "block";
+}
 payment.addEventListener('change', function(){
     if (this.checked) {
         paymentDiv.style.display = "block";
@@ -12,6 +15,10 @@ payment.addEventListener('change', function(){
 
 let hard = document.getElementById('hard-checkbox');
 let hardDiv = document.getElementById('hard-div');
+
+if (hard.checked) {
+  hardDiv.style.display = "block";
+}
 hard.addEventListener('change', function(){
     if (this.checked) {
         hardDiv.style.display = "block";
@@ -49,7 +56,7 @@ function parse(){
                   "<img width='600' height='400' src='https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=400&center=lonlat:" + response.data + "&zoom=14&marker=lonlat:" + response.data + ";color:%23ff0000;size:small&apiKey=593087ab22f34ff9864cdc6579caf776'>";
                   console.log(response.data);
                   axios.get('/api/address/calc/' + placeLocation + '/' + response.data)
-                    .then(response => document.getElementById("distance").innerHTML += Math.round(response.data) / 1000); loader.style.display = 'none'
+                    .then(response => document.getElementById("distance").innerHTML = Math.round(response.data) / 1000) + 'км'; loader.style.display = 'none'
                 }).catch(
                 error => console.log(error)
             )

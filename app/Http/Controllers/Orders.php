@@ -68,6 +68,7 @@ class Orders extends Controller
     public function store(OrdersRequest $request, Messages $messages)
     {
         $request->validated();
+        dd($request->payment);
         dd($request);
         $messages->sendMap($request->location);
         /*dd();
