@@ -35,6 +35,7 @@ function stopDefAction(evt) {
 let addressBtn = document.getElementById("addressBtn");
 let city = document.getElementById('city');
 let street = document.getElementById('street');
+
 city.addEventListener("change", parse);
 street.addEventListener("change", parse);
 
@@ -60,4 +61,8 @@ function parse(){
                 }).catch(
                 error => console.log(error)
             )
+}
+
+if(street.value != ''){
+  parse();
 }

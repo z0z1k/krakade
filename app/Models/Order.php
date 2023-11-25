@@ -13,7 +13,28 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['be_ready', 'client_address', 'client_phone', 'place_id', 'message_id', 'comment', 'payment_type', 'status', 'courier_id', 'get_at', 'delivered_at', 'message', 'ready', 'courier_arriving_time', 'ready_at'];
+    protected $fillable = [
+        'place_id',
+        'courier_id',
+        'prepared_at',
+        'prepared_at',
+        'taken_at',
+        'delivered_at',
+        'approximate_ready_at',
+        'approximate_courier_arrived_at',
+        'is_ready',
+        'payment',
+        'problem',
+        'city_id',
+        'client_phone',
+        'message_id',
+        'comment',
+        'status',
+        'message',
+        'address',
+        'address_info',
+        'location',
+    ];
 
     public function place()
     {

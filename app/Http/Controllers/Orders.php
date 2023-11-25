@@ -27,14 +27,18 @@ class Orders extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $orders = Gate::allows('courier') ? Order::activeCourier()->get() : Order::activePlace()->get();
-        foreach($orders as &$order) {
+    {        
+        $courier = Gate::allows('courier');
+        $place = Gate::allows('place');
+        $orders = $courier ? Order::activeCourier()->get() : Order::activePlace()->get();
+
+        foreach($orders as $order) {
+            $order['address'] = $this->parseAddress($order);
+        }
+        /*foreach($orders as &$order) {
             $order['ready_at'] = Carbon::parse($order->ready_at)->format('H:i');            
             $order['be_ready'] = Carbon::parse($order->be_ready)->format('H:i');
-        }
-        $courier = Gate::allows('courier') ? true : false;
-        $place = Gate::allows('place') ? true : false;
+        }*/
         $title = 'Активні замовлення';
         return view('orders.index', compact('orders', 'title', 'courier', 'place'));
     }
@@ -67,21 +71,27 @@ class Orders extends Controller
      */
     public function store(OrdersRequest $request, Messages $messages)
     {
-        $request->validated();
-        dd($request->payment);
-        dd($request);
-        $messages->sendMap($request->location);
-        /*dd();
-        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment', 'place_id');
-        $data['message'] = $this->generateMessage($data);
-        $messageId = $messages->send($data['message']);
-        $id = Order::create($data + ['message_id' => $messageId, 'ready_at' => $data['be_ready']])->id;
+        $data = $request->only(
+            'place_id',
+            'location',
+            'client_phone',
+            'payment',
+            'problem',
+            'comment'
+        ) + [
+            'approximate_ready_at' => Carbon::parse($request->approximate_ready_at)->toDateTimeString(),
+            'city_id' => $request->city,
+            'address' => $request->client_address,
+            'address_info' => $request->client_address_info,
+        ];
 
-        $this->updateKeyboard($id, $messageId, 'Взяти замовлення');
+        $data['message_id'] = $messages->send($this->generateMessage($data));
+        $id = Order::create($data)->id;
+
+        $messages->attachKeyboard($id, $data['message_id'], 'Взяти замовлення');
         $this->wsMessage('order_created');
 
-        return to_route('orders.index')->with('message', 'order.created');*/
-
+        return to_route('orders.index')->with('message', 'order.created');
     }
 
     /**
@@ -280,11 +290,26 @@ class Orders extends Controller
         return $response;
     }
 
+    protected function parseAddress($order)
+    {
+        $city = City::findOrFail($order->city_id)->city;
+        $city = $city != 'Тернопіль' ?? '';
+        $address_info = str_contains($order->address_info, 'кв') ? $order->address_info : 'кв ' . $order->address_info;
+
+        return "$city $order->address, $address_info";
+    }
+
     protected function generateMessage($data)
     {
-        $payment = $data['payment_type'] ?? 'Оплата не потрібна';
-        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ " . $data['client_address'] ."</strong>";
-        $message .= "\n{$data['be_ready']}, {$data['client_phone']}, {$payment}\n{$data['comment']}";
+        $city = City::findOrFail($data['city_id'])->city == 'Тернопіль' ? '' : City::findOrFail($data['city_id'])->city;
+        $address_info = str_contains($data['address_info'], 'кв') ? $data['address_info'] : 'кв ' . $data['address_info'];
+        $payment = $data['payment'] ?? '';
+        $problem = $data['problem'] ?? '';
+        $approximate_ready_at = Carbon::parse($data['approximate_ready_at'])->format('H:i');
+        
+        $address = "$city, {$data['address']}, $address_info";
+        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ {$city} $address</strong>";
+        $message .= "\n{$approximate_ready_at}, {$data['client_phone']}, {$payment}\n{$problem}\n{$data['comment']}";
 
         return $message;
     }
