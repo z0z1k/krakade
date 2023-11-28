@@ -8,6 +8,7 @@ use App\Http\Requests\Orders\Store as OrdersRequest;
 use App\Models\Order;
 use App\Models\Place;
 use App\Models\City;
+use App\Models\User;
 
 use DefStudio\Telegraph\Models\TelegraphChat;
 use DefStudio\Telegraph\Keyboard\Button;
@@ -30,15 +31,10 @@ class Orders extends Controller
     {        
         $courier = Gate::allows('courier');
         $place = Gate::allows('place');
-        $orders = $courier ? Order::activeCourier()->get() : Order::activePlace()->get();
+        $orders = $courier ? Order::activeCourier()->get() : Order::activePlace()->get();     
 
-        foreach($orders as $order) {
-            $order['address'] = $this->parseAddress($order);
-        }
-        /*foreach($orders as &$order) {
-            $order['ready_at'] = Carbon::parse($order->ready_at)->format('H:i');            
-            $order['be_ready'] = Carbon::parse($order->be_ready)->format('H:i');
-        }*/
+        $orders = $this->editOrdersForView($orders);
+
         $title = 'Активні замовлення';
         return view('orders.index', compact('orders', 'title', 'courier', 'place'));
     }
@@ -83,6 +79,7 @@ class Orders extends Controller
             'city_id' => $request->city,
             'address' => $request->client_address,
             'address_info' => $request->client_address_info,
+            'prepared_at' => Carbon::parse($request->approximate_ready_at)->toDateTimeString(),
         ];
 
         $data['message_id'] = $messages->send($this->generateMessage($data));
@@ -281,6 +278,29 @@ class Orders extends Controller
         $this->wsMessage('order_updated');
         
         return to_route('orders.index');
+    }
+
+    protected function editOrdersForView($orders)
+    {
+        foreach($orders as $order) {
+            $order['address'] = $this->parseAddress($order);
+            if ($order->approximate_courier_arrived_at) {
+                $order->approximate_courier_arrived_at = Carbon::parse($order->approximate_courier_arrived_at)->format('H:i');
+            } //yes, this is bad
+            if ($order->payment) {
+                $order->payment .= '₴';
+            } else {
+                $order->payment = 'Оплата не потрібна';   
+            }//yes, this is bad again
+            $order['can_edit'] = Gate::allows('change-order-status', $order);            
+            $order->approximate_ready_at = Carbon::parse($order->approximate_ready_at)->format('H:i'); //why created_at is carbon object, but this string?
+            $order->prepared_at = Carbon::parse($order->prepared_at)->format('H:i');
+
+            $order['courier'] = User::where('id', $order->courier_id)->first(); //fix this
+            
+        }
+
+        return $orders;
     }
 
     protected function sendMessage($message)
