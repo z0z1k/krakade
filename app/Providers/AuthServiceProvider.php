@@ -45,7 +45,7 @@ class AuthServiceProvider extends ServiceProvider
         });*/
 
         Gate::define('change-order-status', function(User $user, Order $order){
-            return Gate::allows('admin') || $order->courier_id == Auth::user()->id;
+            return Gate::allows('admin') || $order->courier_id == $user->id;
         });
     }
 }

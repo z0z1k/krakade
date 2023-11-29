@@ -174,7 +174,7 @@ class Orders extends Controller
             return to_route('orders.show', $id);
         }
 
-        $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'courier_arriving_time' => $order->be_ready]);
+        $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'approximate_courier_arrived_at' => $order->prepared_at]);
         $this->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
 
         $this->wsMessage('order_updated');
@@ -292,7 +292,8 @@ class Orders extends Controller
             } else {
                 $order->payment = 'Оплата не потрібна';   
             }//yes, this is bad again
-            $order['can_edit'] = Gate::allows('change-order-status', $order);            
+            $order['can_edit'] = Gate::allows('change-order-status', $order);
+            //dump($order->can_edit);            
             $order->approximate_ready_at = Carbon::parse($order->approximate_ready_at)->format('H:i'); //why created_at is carbon object, but this string?
             $order->prepared_at = Carbon::parse($order->prepared_at)->format('H:i');
 
