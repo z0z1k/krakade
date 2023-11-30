@@ -81,8 +81,8 @@ class Orders extends Controller
             'address_info' => $request->client_address_info,
             'prepared_at' => Carbon::parse($request->approximate_ready_at)->toDateTimeString(),
         ];
-
-        $data['message_id'] = $messages->send($this->generateMessage($data));
+        $data['message'] = $this->generateMessage($data);
+        $data['message_id'] = $messages->send($data['message']);
         $id = Order::create($data)->id;
 
         $messages->attachKeyboard($id, $data['message_id'], 'Взяти замовлення');
@@ -181,11 +181,33 @@ class Orders extends Controller
         return to_route('orders.show', $id);
     }
 
+    public function changeCourier($id)
+    {
+        $order = Order::findOrFail($id);
+        if (Gate::allows('change-order-status', $order) && $order->status == OrderStatus::COURIER_FOUND) {
+            $order->update([
+                'status' => OrderStatus::CREATED,
+                'courier_id' => null,
+                'approximate_courier_arrived_at' => null,
+            ]);
+
+            $this->wsMessage('order_updated');
+        }
+
+        return to_route('orders.index');
+    }
+
     public function get($id)
     {
         $order = Order::findOrFail($id);
         $this->updateKeyboard($order->id, $order->message_id, OrderStatus::TAKEN->text());
-        $order->update([ 'status' => OrderStatus::TAKEN, 'get_at' => Carbon::now('Europe/Kyiv')->toDateTimeString() ]);
+        $data = ['status' => OrderStatus::TAKEN, 'taken_at' => Carbon::now('Europe/Kyiv')->toDateTimeString()];
+        
+        if (!$order->is_ready) {
+            $data['is_ready'] = true;
+            $data['prepared_at'] = Carbon::now('Europe/Kyiv')->toDateTimeString();
+        }
+        $order->update($data);
                 $this->wsMessage('order_updated'); 
            
         return to_route('orders.show', $id);
@@ -251,11 +273,12 @@ class Orders extends Controller
 
     protected function courierUpdateTime($id, $method, $count = 5)
     {
-        $order = Order::findOrFail($id);        
-        $time = Carbon::parse($order->courier_arriving_time)->$method($count)->format('H:i');
-
-        $order->update(['courier_arriving_time' => $time]);
-        $this->wsMessage('order_updated');
+        $order = Order::findOrFail($id);
+        if (Gate::allows('change-order-status', $order)) {
+            $time = Carbon::parse($order->approximate_courier_arrived_at)->$method($count);
+            $order->update(['approximate_courier_arrived_at' => $time]);
+            $this->wsMessage('order_updated');
+        }
 
         return to_route('orders.index');
     }
@@ -263,9 +286,9 @@ class Orders extends Controller
     protected function updateTime($id, $method, $count = 5)
     {
         $order = Order::findOrFail($id);        
-        $time = Carbon::parse($order->ready_at)->$method($count)->format('H:i');
+        $time = Carbon::parse($order->prepared_at)->$method($count);
 
-        $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", $time, $order->message);
+        $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", $time->format('H:i'), $order->message);
         if(!str_contains($message, 'Оновлення!')){
             $message  = 'Оновлення! ' . $message;
         }
@@ -274,7 +297,7 @@ class Orders extends Controller
         $text = $order->courier->name ?? $order->status->text();
         $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
      
-        $order->update([ 'ready_at' =>  $time, 'message' => $message, 'message_id' => $response->telegraphMessageId()]);
+        $order->update([ 'prepared_at' =>  $time, 'message' => $message, 'message_id' => $response->telegraphMessageId()]);
         $this->wsMessage('order_updated');
         
         return to_route('orders.index');

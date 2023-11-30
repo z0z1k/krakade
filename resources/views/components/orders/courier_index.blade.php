@@ -23,12 +23,12 @@
                         <img src="{{ URL::to('/assets/img/icons/phone.png') }}">{{ $order->client_phone }}
                     </li>
                     <li class="list-group-item">
-                        <img src="{{ URL::to('/assets/img/icons/time.png') }}">Буде готове о {{ $order->prepared_at }}
+                        <img src="{{ URL::to('/assets/img/icons/time.png') }}">Готове о {{ $order->prepared_at }}
                     </li>
                     @if($order->approximate_courier_arrived_at)
                     <li class="list-group-item">
                         <span class="badge text-bg-warning">Кур'єр буде о: {{ $order->approximate_courier_arrived_at }}</span>
-                        @if($order->can_edit)
+                        @if($order->can_edit && $order->taken_at == null)
                         <br>
                         <a href="{{ route('orders.courierMinusTime', $order->id) }}" class="btn btn-outline-success btn-sm">-5хв</a>
                         <a href="{{ route('orders.courierPlusTime', $order->id) }}" class="btn btn-outline-success btn-sm">+5хв</a>
@@ -49,7 +49,10 @@
                 @if(!$order->courier)
                     <a href="{{ route('orders.take', $order->id) }}" class="btn btn-outline-dark">Взяти замовлення</a>         
                 @elseif($order->can_edit)
-                    <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-outline-dark">Перепризначити</a>
+                    <a href="{{ route('orders.changeCourier', $order->id) }}" class="btn btn-outline-dark">Перепризначити</a>
+                    <x-form method="{{ $order->status->routeMethod() }}" action="{{ route($order->status->routeLink(), $order->id) }}">
+                        <button class="btn btn-outline-dark">{{ $order->status->textForCourier() }}</button>
+                    </x-form>
                 @endif
                 
                 <p class="card-text">

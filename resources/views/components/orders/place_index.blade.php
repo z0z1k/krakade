@@ -24,10 +24,10 @@
                     </li>
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/time.png') }}">
-                        Буде готове о 
-                        <a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">&#8656;</a>
+                        Готове о 
+                        @if(!$order->is_ready)<a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">&#8656;</a>@endif
                         {{ $order->prepared_at }}
-                        <a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">&#8658;</a>
+                        @if(!$order->is_ready)<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">&#8658;</a>@endif
                     </li>
                     @if($order->approximate_courier_arrived_at)
                     <li class="list-group-item">
@@ -45,7 +45,10 @@
                 </ul>
 
                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>
-                <a href="{{ route('orders.cancel', $order->id) }}" class="btn btn-outline-danger">Скасувати</a>
+                
+                <x-form method="put" action="{{ route('orders.cancel', $order->id) }}">
+                    <button class="btn btn-outline-danger">Скасувати</button>
+                </x-form>
                 
                 <p class="card-text">
                     <span class="badge text-bg-info">Створено: {{ $order->created_at->format('H:i') }}</span>

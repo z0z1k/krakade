@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #ff80b3">
+<div class="container-fluid">
     <a class="navbar-brand" href="{{ route('orders.index') }}">Krakade</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
@@ -11,15 +12,13 @@
                     <a href="{{ route('courier.show', Auth::user()->id) }}" class="nav-link ">Статистика</a>
                 </li>
             @endif
-            @can('courier', 'place')
-                <li class="nav-item">
+            <li class="nav-item">
                     <a href="{{ route('orders.index') }}" class="nav-link ">Активні замовлення</a>
-                </li>
+            </li>
+            @can('place')
                 <li class="nav-item">
                     <a href="{{ route('orders.delivered') }}" class="nav-link ">Виконані замовлення</a>
                 </li>
-            @endif
-            @can('place')
                 <li class="nav-item">
                     <a href="{{ route('orders.cancelled') }}" class="nav-link ">Скасовані замовлення</a>
                 </li>
@@ -47,4 +46,5 @@
         @endif
         </ul>
     </div>
+</div>
 </nav>
