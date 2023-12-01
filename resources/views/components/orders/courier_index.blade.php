@@ -43,6 +43,9 @@
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/payment.png') }}">{{ $order->payment }}
                     </li>
+                    <li class="list-group-item">
+                        Ціна: {{ $order->price }}
+                    </li>
                 </ul>
 
                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>

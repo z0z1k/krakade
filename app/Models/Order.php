@@ -34,6 +34,7 @@ class Order extends Model
         'address',
         'address_info',
         'location',
+        'price'
     ];
 
     public function place()

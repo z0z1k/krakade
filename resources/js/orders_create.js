@@ -54,10 +54,10 @@ function parse(){
                 response => {
                   document.getElementById("location-input").value = response.data;
                   document.getElementById("map").innerHTML = 
-                  "<img width='600' height='400' src='https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=400&center=lonlat:" + response.data + "&zoom=14&marker=lonlat:" + response.data + ";color:%23ff0000;size:small&apiKey=593087ab22f34ff9864cdc6579caf776'>";
+                  "<img width='450' height='300' src='https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=400&center=lonlat:" + response.data + "&zoom=14&marker=lonlat:" + response.data + ";color:%23ff0000;size:small&apiKey=593087ab22f34ff9864cdc6579caf776'>";
                   console.log(response.data);
                   axios.get('/api/address/calc/' + placeLocation + '/' + response.data)
-                    .then(response => document.getElementById("distance").innerHTML = Math.round(response.data) / 1000) + 'км'; loader.style.display = 'none'
+                    .then(response => document.getElementById("distance").value = response.data); loader.style.display = 'none';
                 }).catch(
                 error => console.log(error)
             )

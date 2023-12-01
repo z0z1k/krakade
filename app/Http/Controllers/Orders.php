@@ -67,6 +67,18 @@ class Orders extends Controller
      */
     public function store(OrdersRequest $request, Messages $messages)
     {
+        $prices = City::find($request->city)->price;
+        if (array_key_exists('default', $prices)) {
+            $price = $prices['default'];
+        } else {
+            foreach ($prices as $distance => $value) {
+                if ($request->distance <= floatval(str_replace(",", ".", $distance)) * 1000) {
+                    $price = $value;
+                    break;
+                }
+            }
+        } //yes, foreach is bad here
+
         $data = $request->only(
             'place_id',
             'location',
@@ -80,7 +92,9 @@ class Orders extends Controller
             'address' => $request->client_address,
             'address_info' => $request->client_address_info,
             'prepared_at' => Carbon::parse($request->approximate_ready_at)->toDateTimeString(),
+            'price' => $price,
         ];
+
         $data['message'] = $this->generateMessage($data);
         $data['message_id'] = $messages->send($data['message']);
         $id = Order::create($data)->id;
@@ -347,13 +361,13 @@ class Orders extends Controller
     {
         $city = City::findOrFail($data['city_id'])->city == 'Тернопіль' ? '' : City::findOrFail($data['city_id'])->city;
         $address_info = str_contains($data['address_info'], 'кв') ? $data['address_info'] : 'кв ' . $data['address_info'];
-        $payment = $data['payment'] ?? '';
+        $payment = $data['payment'] ? "кур'єр платить " .$data['payment'] . 'грн' : 'без оплати';
         $problem = $data['problem'] ?? '';
         $approximate_ready_at = Carbon::parse($data['approximate_ready_at'])->format('H:i');
         
         $address = "$city, {$data['address']}, $address_info";
-        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ {$city} $address</strong>";
-        $message .= "\n{$approximate_ready_at}, {$data['client_phone']}, {$payment}\n{$problem}\n{$data['comment']}";
+        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ $address</strong>";
+        $message .= "\n{$approximate_ready_at}, {$data['client_phone']}, {$payment}\n{$problem}\n{$data['comment']}\nДоставка:{$data['price']}грн";
 
         return $message;
     }

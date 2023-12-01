@@ -16,7 +16,7 @@
             <div class="col text-center text-danger">@error('location') {{ $message }} @enderror </div>
         </div>
         <div class="loader"></div>
-        <span>Відстань у кілометрах:<span id="distance"></span></span
+        <input type="hidden" name="distance" id="distance">
 
         <div class="row mb-3">
             <div class="col-8 col-sm-8"><x-form-input name="client_phone" label="Номер телефону:" /></div>

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\Telegram;
 
 use App\Http\Controllers\Orders as OrdersC;
+use App\Http\Controllers\Cities as CitiesC;
 
 use App\Http\Controllers\Users as UsersC;
 use App\Http\Controllers\Places as PlacesC;
@@ -74,6 +75,9 @@ Route::middleware('auth')->group(function(){
         Route::resource('users', UsersC::class);
         Route::get('users/{id}/roles', [ UsersC::class, 'roles' ])->name('users.roles');
         Route::put('users/{id}/roles', [ UsersC::class, 'saveRoles']);
+
+        Route::get('cities', [ CitiesC::class, 'index' ])->name('cities.index');
+        Route::put('cities', [ CitiesC::class, 'update' ])->name('cities.update');
     });
     
     Route::prefix('profile')->group(function(){

@@ -35,6 +35,9 @@
                 <li class="nav-item">
                     <a href="{{ route('users.index') }}" class="nav-link ">Користувачі</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('cities.index') }}" class="nav-link">Ціни</a>
+                </li>
             @endif
                 <li class="nav-item">
                     <a href="{{ route('profile.info') }}" class="nav-link ">Редагувати профіль</a>
