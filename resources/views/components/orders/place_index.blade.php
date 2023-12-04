@@ -29,9 +29,14 @@
                         {{ $order->prepared_at }}
                         @if(!$order->is_ready)<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">&#8658;</a>@endif
                     </li>
-                    @if($order->approximate_courier_arrived_at)
+                    @if($order->approximate_courier_arrived_at && !$order->taken_at)
                     <li class="list-group-item">
                         <span class="badge text-bg-warning">Кур'єр буде о: {{ $order->approximate_courier_arrived_at }}</span>
+                    </li>
+                    @endif
+                    @if($order->taken_at)
+                    <li class="list-group-item">
+                        <span class="badge text-bg-warning">Кур'єр отрмав: {{ $order->taken_at }}</span>
                     </li>
                     @endif
                     @if($order->comment)
@@ -47,8 +52,6 @@
                     </li>
                 </ul>
 
-                <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>
-                
                 <x-form method="put" action="{{ route('orders.cancel', $order->id) }}">
                     <button class="btn btn-outline-danger">Скасувати</button>
                 </x-form>

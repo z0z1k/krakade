@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function(){
     Route::middleware('can:courier')->group(function(){
         Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
         Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
-        Route::post('orders/setDelivered/{id}', [ OrdersC::class, 'setDelivered' ])->middleware('can:change-order-status')->name('orders.setDelivered');
+        Route::post('orders/setDelivered/{id}', [ OrdersC::class, 'setDelivered' ])->name('orders.setDelivered');
         
         Route::get('orders/{id}/courierPlusTime', [ OrdersC::class, 'courierPlusTime' ])->name('orders.courierPlusTime');
         Route::get('orders/{id}/courierMinusTime', [ OrdersC::class, 'courierMinusTime' ])->name('orders.courierMinusTime');
