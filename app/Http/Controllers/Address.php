@@ -17,7 +17,7 @@ class Address extends Controller
 
     public function calc($firstLocation, $secondLocation)
     {
-        $url = "http://localhost:5000/route/v1/driving/{$firstLocation};{$secondLocation}";
+        $url = "http://192.168.0.116:5000/route/v1/driving/{$firstLocation};{$secondLocation}";
         $response = Http::get($url)['routes'][0]['distance'];
         return $response;
     }
