@@ -39,7 +39,7 @@ class Places extends Controller
         $response = Http::get($url);
         $response = json_decode($response)[0];
 
-        $location = $response->lon .',' . $response->lat;
+        $location = $response->lat .',' . $response->lon;
 
         $data = $request->only('name', 'address', 'description') + [ 'user_id' => $request->user()->id, 'location' => $location ];
         Place::create($data);
