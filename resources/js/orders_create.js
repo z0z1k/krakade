@@ -52,9 +52,9 @@ function parse(){
     axios.post('/api/address/parse', data)
         .then(
                 response => {
-                  document.getElementById("location-input").value = response.data;
-                  document.getElementById("map").innerHTML = 
-                  "<img width='450' height='300' src='https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=400&center=lonlat:" + response.data + "&zoom=14&marker=lonlat:" + response.data + ";color:%23ff0000;size:small&apiKey=593087ab22f34ff9864cdc6579caf776'>";
+                  //document.getElementById("location-input").value = response.data;
+                  //document.getElementById("map").innerHTML = 
+                  //"<img width='450' height='300' src='https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=400&center=lonlat:" + response.data + "&zoom=14&marker=lonlat:" + response.data + ";color:%23ff0000;size:small&apiKey=593087ab22f34ff9864cdc6579caf776'>";
                   console.log(response.data);
                   axios.get('/api/address/calc/' + placeLocation + '/' + response.data)
                     .then(response => document.getElementById("distance").value = response.data); loader.style.display = 'none';

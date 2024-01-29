@@ -67,17 +67,23 @@ class Orders extends Controller
      */
     public function store(OrdersRequest $request, Messages $messages)
     {
+        //dd($request->distance);
         $prices = City::find($request->city)->price;
         if (array_key_exists('default', $prices)) {
             $price = $prices['default'];
         } else {
             foreach ($prices as $distance => $value) {
+                $price = false;
                 if ($request->distance <= floatval(str_replace(",", ".", $distance)) * 1000) {
                     $price = $value;
                     break;
                 }
             }
         } //yes, foreach is bad here
+
+        if (!$price) {
+            $price = end($prices);
+        }
 
         $data = $request->only(
             'place_id',
@@ -94,6 +100,7 @@ class Orders extends Controller
             'prepared_at' => Carbon::parse($request->approximate_ready_at)->toDateTimeString(),
             'price' => $price,
         ];
+        //dd($price);
 
         $data['message'] = $this->generateMessage($data);
         $data['message_id'] = $messages->send($data['message']);

@@ -1,5 +1,5 @@
 <x-layouts.base title="Створити замовлення">
-<div id="map"></div>
+<!-- <div id="map"></div> -->
     <h3>{{$place->name}}</h3>
     <div style="display:none" id="placeLocation">{{ $place->location }}</div>
 
