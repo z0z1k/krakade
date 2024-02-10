@@ -5,7 +5,7 @@
 
     <x-form method="post" action="{{ route('orders.store') }}">
         <input type="hidden" name="place_id" value="{{$place->id}}">
-        <input type="hidden" name="location" id="location-input">
+        <input type="blck" name="location" id="location-input" value="{{$place->location}}">
 
         <div class="row mb-3">
             <div class="col-12 col-sm-3"><x-form-select id="city" name="city" :options="$cities" label="Населений пункт"/></div>

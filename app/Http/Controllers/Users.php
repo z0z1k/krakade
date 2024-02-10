@@ -7,6 +7,7 @@ use App\Http\Requests\Users\Role as saveRolesRequest;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Order;
 
 class Users extends Controller
 {
@@ -15,7 +16,11 @@ class Users extends Controller
      */
     public function index()
     {
-        return view('users.index', [ 'users' => User::all() ]);
+        $users = User::all();
+        foreach($users as &$user) {
+            $user['orders'] = Order::where('courier_id', $user->id)->count();
+        }
+        return view('users.index', compact('users'));
     }
 
     /**

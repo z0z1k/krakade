@@ -31,11 +31,13 @@ use App\Http\Controllers\Courier\Stats as CourierStatsC;
 */
 
 Route::get('/', function(){
-    return view('home');
+    return to_route('orders.index');
 });
 Route::get('/info', function(){
     return view('info');
 })->name('info');
+
+Route::get('/prices', [ CitiesC::class, 'show' ])->name('prices');
 
 Route::middleware('auth')->group(function(){
 

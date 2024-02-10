@@ -25,4 +25,9 @@ class Cities extends Controller
 
         return to_route('cities.index');
     }
+
+    public function show()
+    {
+        return view('cities.show', [ 'cities' => City::all() ]);
+    }
 }

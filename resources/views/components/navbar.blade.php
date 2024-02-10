@@ -33,10 +33,13 @@
             @endif
             @can('admin')
                 <li class="nav-item">
-                    <a href="{{ route('users.index') }}" class="nav-link ">Користувачі</a>
+                    <a href="{{ route('users.index') }}" class="nav-link">Користувачі</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('cities.index') }}" class="nav-link">Ціни</a>
+                    <a href="{{ route('prices') }}" class="nav-link">Ціни</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('cities.index') }}" class="nav-link">Редагувати ціни</a>
                 </li>
             @endif
                 <li class="nav-item">

@@ -73,6 +73,7 @@ class Orders extends Controller
             $price = $prices['default'];
         } else {
             foreach ($prices as $distance => $value) {
+                //dd($request->distance);
                 $price = false;
                 if ($request->distance <= floatval(str_replace(",", ".", $distance)) * 1000) {
                     $price = $value;
@@ -103,7 +104,7 @@ class Orders extends Controller
             'prepared_at' => Carbon::parse($request->approximate_ready_at)->toDateTimeString(),
             'price' => $price,
         ];
-        dd($price);
+        //dd($price);
 
         $data['message'] = $this->generateMessage($data);
         $data['message_id'] = $messages->send($data['message']);
@@ -267,21 +268,30 @@ class Orders extends Controller
     public function plusTime($id)
     {
         $this->updateTime($id, 'addMinutes');
+
+        return to_route('orders.index');
     }
 
     public function minusTime($id)
     {
         $this->updateTime($id, 'subMinutes');
+
+        return to_route('orders.index');
     }
 
     public function courierPlusTime($id)
     {
         $this->courierUpdateTime($id, 'addMinutes');
+
+        return to_route('orders.index');
+    
     }
 
     public function courierMinusTime($id)
     {
         $this->courierUpdateTime($id, 'subMinutes');
+
+        return to_route('orders.index');
     }
 
     public function cancel($id)
