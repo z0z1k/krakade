@@ -9,7 +9,7 @@
 <x-form method="put" action="{{ route('cities.update') }}">
     @foreach($cities as $city)
     @foreach($city->price as $distance => $price)
-    @php $price = $price / 1.05 @endphp
+    @php $price = round($price / 1.05) @endphp
     <input type="hidden" name="{{ $city->id }}_{{ $distance }}" value="{{ $price }}">
     @endforeach
     @endforeach
@@ -18,7 +18,7 @@
 <x-form method="put" action="{{ route('cities.update') }}">
         @foreach($cities as $city)
         @foreach($city->price as $distance => $price)
-        @php $price = $price * 1.05 @endphp
+        @php $price = round($price * 1.05) @endphp
         <input type="hidden" name="{{ $city->id }}_{{ $distance }}" value="{{ $price }}">
         @endforeach
         @endforeach
