@@ -203,7 +203,7 @@ class Orders extends Controller
         $this->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
 
         $this->wsMessage('order_updated');
-        return to_route('orders.show', $id);
+        return to_route('orders.index');
     }
 
     public function changeCourier($id)
@@ -235,7 +235,7 @@ class Orders extends Controller
         $order->update($data);
                 $this->wsMessage('order_updated'); 
            
-        return to_route('orders.show', $id);
+        return to_route('orders.index');
     }
 
     public function setDelivered($id)
@@ -246,7 +246,7 @@ class Orders extends Controller
         
         $this->wsMessage('order_updated');
         
-        return to_route('orders.show', $id);
+        return to_route('orders.index');
     }
 
     public function ready($id)
