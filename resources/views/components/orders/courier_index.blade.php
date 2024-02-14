@@ -59,7 +59,7 @@
                 @if($order->taken_at == null)
                     <a href="{{ route('orders.changeCourier', $order->id) }}" class="btn btn-outline-dark">Перепризначити</a>
                 @endif
-                    <x-form method="{{ $order->status->routeПереприMethod() }}" action="{{ route($order->status->routeLink(), $order->id) }}">
+                    <x-form method="{{ $order->status->routeMethod() }}" action="{{ route($order->status->routeLink(), $order->id) }}">
                         <button class="btn btn-outline-dark">Змінити статус: {{ $order->status->textForCourier() }}</button>
                     </x-form>
                 @endif
