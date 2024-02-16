@@ -381,13 +381,14 @@ class Orders extends Controller
 
     protected function generateMessage($data)
     {
-        $city = City::findOrFail($data['city_id'])->city == 'Тернопіль' ? '' : City::findOrFail($data['city_id'])->city;
+        $city = City::findOrFail($data['city_id'])->city;
+        $city = $city == 'Тернопіль' ? '' : $city . ', ';
         $address_info = str_contains($data['address_info'], 'кв') ? $data['address_info'] : 'кв ' . $data['address_info'];
         $payment = $data['payment'] ? "кур'єр платить " .$data['payment'] . 'грн' : 'без оплати';
         $problem = $data['problem'] ?? '';
         $approximate_ready_at = Carbon::parse($data['approximate_ready_at'])->format('H:i');
         
-        $address = "$city, {$data['address']}, $address_info";
+        $address = $city . $data['address'] . ', ' .$address_info;
         $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ $address</strong>";
         $message .= "\n{$approximate_ready_at}, {$data['client_phone']}, {$payment}\n{$problem}\n{$data['comment']}\nДоставка:{$data['price']}грн";
 
