@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function(){
     Route::put('orders/{id}/update', [OrdersC::class, 'update'])->name('orders.update');
 
     Route::middleware('can:courier')->group(function(){
-        Route::get('orders/take/{id}', [ OrdersC::class, 'take' ])->name('orders.take');
+        Route::get('orders/{id}/take', [ OrdersC::class, 'take' ])->name('orders.take');
         Route::post('orders/{id}/get', [ OrdersC::class, 'get' ])->name('orders.get');
         Route::post('orders/setDelivered/{id}', [ OrdersC::class, 'setDelivered' ])->name('orders.setDelivered');
         

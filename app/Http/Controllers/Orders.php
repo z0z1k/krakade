@@ -110,7 +110,10 @@ class Orders extends Controller
         $data['message_id'] = $messages->send($data['message']);
         $id = Order::create($data)->id;
 
-        $messages->attachKeyboard($id, $data['message_id'], 'Взяти замовлення');
+
+        $this->updateKeyboard($id, $data['message_id'], 'Взяти замовлення');
+
+        //$this->attachKeyboard($id, $data['message_id'], 'Взяти замовлення');
         $this->wsMessage('order_created');
 
         return to_route('orders.index')->with('message', 'order.created');
