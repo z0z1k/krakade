@@ -376,7 +376,7 @@ class Orders extends Controller
     protected function parseAddress($order)
     {
         $city = City::findOrFail($order->city_id)->city;
-        $city = $city != 'Тернопіль' ?? '';
+        $city = $city != env('CITY') ?? '';
         $address_info = str_contains($order->address_info, 'кв') ? $order->address_info : 'кв ' . $order->address_info;
 
         return "$city $order->address, $address_info";
@@ -385,7 +385,7 @@ class Orders extends Controller
     protected function generateMessage($data)
     {
         $city = City::findOrFail($data['city_id'])->city;
-        $city = $city == 'Тернопіль' ? '' : $city . ', ';
+        $city = $city == env('CITY') ? '' : $city . ', ';
         $address_info = str_contains($data['address_info'], 'кв') ? $data['address_info'] : 'кв ' . $data['address_info'];
         $payment = $data['payment'] ? "кур'єр платить " .$data['payment'] . 'грн' : 'без оплати';
         $problem = $data['problem'] ?? '';
