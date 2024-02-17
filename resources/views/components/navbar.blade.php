@@ -36,9 +36,6 @@
                     <a href="{{ route('users.index') }}" class="nav-link">Користувачі</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('prices') }}" class="nav-link">Ціни</a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('cities.index') }}" class="nav-link">Редагувати ціни</a>
                 </li>
             @endif
@@ -49,8 +46,14 @@
             <li class="nav-item">
                 <a href="{{ route('registration.create') }}" class="nav-link ">Реєстрація</a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('login') }}" class="nav-link">Увійти</a>
+            </li>
         @endif
-        </ul>
+            <li class="nav-item">
+                        <a href="{{ route('prices') }}" class="nav-link">Ціни</a>
+                    </li>
+            </ul>
     </div>
 </div>
 </nav>
