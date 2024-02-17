@@ -35,7 +35,7 @@ class Places extends Controller
     {
         $request->validated();
 
-        $url = 'https://nominatim.openstreetmap.org/search?q=Тернопіль+' . str_replace(' ', '+', $request->address) .'&format=json';
+        $url = 'https://nominatim.openstreetmap.org/search?q=' . env('CITY') .'+' . str_replace(' ', '+', $request->address) .'&format=json';
         $response = Http::get($url);
         $response = json_decode($response)[0];
 
