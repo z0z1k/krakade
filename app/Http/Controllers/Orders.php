@@ -17,7 +17,7 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 use App\Enums\Order\Status as OrderStatus;
 
 use App\Actions\Orders\EditOrdersForView;
-use App\Actions\Orders\ParseAddress;
+use App\Actions\Orders\GenerateMessage;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -68,7 +68,7 @@ class Orders extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OrdersRequest $request, Messages $messages)
+    public function store(OrdersRequest $request, Messages $messages, GenerateMessage $generateMessage)
     {
         //dd($request->distance);
         $prices = City::find($request->city)->price;
@@ -109,7 +109,7 @@ class Orders extends Controller
         ];
         //dd($price);
 
-        $data['message'] = $this->generateMessage($data);
+        $data['message'] = $generateMessage($data);
         $data['message_id'] = $messages->send($data['message']);
         $id = Order::create($data)->id;
 
@@ -167,14 +167,14 @@ class Orders extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(OrdersRequest $request, string $id)
+    public function update(OrdersRequest $request, string $id, GenerateMessage $generateMessage)
     {
         $request->validated();
 
         $order = Order::findOrFail($id);
 
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
-        $data['message'] = $this->generateMessage($data + [ 'place_id' => $order->place_id]);
+        $data['message'] = $generateMessage($data + [ 'place_id' => $order->place_id]);
         if(!str_contains($data['message'], 'Оновлення!')){
             $data['message']  = 'Оновлення! ' . $data['message'];
         }
@@ -357,22 +357,6 @@ class Orders extends Controller
         $address_info = str_contains($order->address_info, 'кв') ? $order->address_info : 'кв ' . $order->address_info;
 
         return "$city $order->address, $address_info";
-    }
-
-    protected function generateMessage($data)
-    {
-        $city = City::findOrFail($data['city_id'])->city;
-        $city = $city == env('CITY') ? '' : $city . ', ';
-        $address_info = str_contains($data['address_info'], 'кв') ? $data['address_info'] : 'кв ' . $data['address_info'];
-        $payment = $data['payment'] ? "кур'єр платить " .$data['payment'] . 'грн' : 'без оплати';
-        $problem = $data['problem'] ?? '';
-        $approximate_ready_at = Carbon::parse($data['approximate_ready_at'])->format('H:i');
-        
-        $address = $city . $data['address'] . ', ' .$address_info;
-        $message = "<strong>" . Place::findOrFail($data['place_id'])->name . " ⇾ $address</strong>";
-        $message .= "\n{$approximate_ready_at}, {$data['client_phone']}, {$payment}\n{$problem}\n{$data['comment']}\nДоставка:{$data['price']}грн";
-
-        return $message;
     }
 
     public function replyMessage($id, $reply)
