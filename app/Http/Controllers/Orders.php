@@ -72,8 +72,7 @@ class Orders extends Controller
     public function store(OrdersRequest $request, Messages $messages, GenerateMessage $generateMessage, CalcPriceForDistance $calcPriceForDistance)
     {
         $price = $calcPriceForDistance(City::find($request->city)->price, $request);
-        dd($price);
-
+        
         $data = $request->only(
             'place_id',
             'location',
@@ -89,7 +88,6 @@ class Orders extends Controller
             'prepared_at' => Carbon::parse($request->approximate_ready_at)->toDateTimeString(),
             'price' => $price,
         ];
-        //dd($price);
 
         $data['message'] = $generateMessage($data);
         $data['message_id'] = $messages->send($data['message']);
