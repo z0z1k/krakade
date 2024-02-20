@@ -16,6 +16,9 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 
 use App\Enums\Order\Status as OrderStatus;
 
+use App\Actions\Orders\EditOrdersForView;
+use App\Actions\Orders\ParseAddress;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -27,13 +30,13 @@ class Orders extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(EditOrdersForView $editOrdersForView)
     {        
         $courier = Gate::allows('courier');
         $place = Gate::allows('place');
         $orders = $courier ? Order::activeCourier()->get() : Order::activePlace()->get();     
 
-        $orders = $this->editOrdersForView($orders);
+        $orders = $editOrdersForView($orders);
 
         $title = 'Активні замовлення';
         return view('orders.index', compact('orders', 'title', 'courier', 'place'));
@@ -338,32 +341,6 @@ class Orders extends Controller
         $this->wsMessage('order_updated');
         
         return to_route('orders.index');
-    }
-
-    protected function editOrdersForView($orders)
-    {
-        foreach($orders as $order) {
-            $order['address'] = $this->parseAddress($order);
-            if ($order->approximate_courier_arrived_at) {
-                $order->approximate_courier_arrived_at = Carbon::parse($order->approximate_courier_arrived_at)->format('H:i');
-            } //yes, this is bad
-            if ($order->payment) {
-                $order->payment .= '₴';
-            } else {
-                $order->payment = 'Оплата не потрібна';   
-            }//yes, this is bad again
-            $order['can_edit'] = Gate::allows('change-order-status', $order);           
-            $order->approximate_ready_at = Carbon::parse($order->approximate_ready_at)->format('H:i'); //why created_at is carbon object, but this string?
-            $order->prepared_at = Carbon::parse($order->prepared_at)->format('H:i');
-            if ($order->taken_at) {
-                $order->taken_at = Carbon::parse($order->taken_at)->format('H:i');
-            }
-
-            $order['courier'] = User::where('id', $order->courier_id)->first(); //fix this
-            
-        }
-
-        return $orders;
     }
 
     protected function sendMessage($message)
