@@ -117,7 +117,7 @@ class Orders extends Controller
         $this->updateKeyboard($id, $data['message_id'], 'Взяти замовлення');
 
         //$this->attachKeyboard($id, $data['message_id'], 'Взяти замовлення');
-        $this->wsMessage('order_created');
+        wsMessage('order_created');
 
         return to_route('orders.index')->with('message', 'order.created');
     }
@@ -185,7 +185,7 @@ class Orders extends Controller
         $this->updateKeyboard($id, $data['message_id'], $text);
         $order->update($data);
 
-        $this->wsMessage('order_updated');
+        wsMessage('order_updated');
 
         return to_route('orders.index')->with('message', 'order.updated');
     }
@@ -208,7 +208,7 @@ class Orders extends Controller
         $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'approximate_courier_arrived_at' => $order->prepared_at]);
         $this->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
 
-        $this->wsMessage('order_updated');
+        wsMessage('order_updated');
         return to_route('orders.index');
     }
 
@@ -222,7 +222,7 @@ class Orders extends Controller
                 'approximate_courier_arrived_at' => null,
             ]);
 
-            $this->wsMessage('order_updated');
+            wsMessage('order_updated');
         }
 
         return to_route('orders.index');
@@ -239,7 +239,7 @@ class Orders extends Controller
             $data['prepared_at'] = Carbon::now('Europe/Kyiv')->toDateTimeString();
         }
         $order->update($data);
-                $this->wsMessage('order_updated'); 
+                wsMessage('order_updated'); 
            
         return to_route('orders.index');
     }
@@ -250,7 +250,7 @@ class Orders extends Controller
         $this->deleteMessage($order->message_id);
         $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now('Europe/Kyiv')->toDateTimeString() ]);
         
-        $this->wsMessage('order_updated');
+        wsMessage('order_updated');
         
         return to_route('orders.index');
     }
@@ -266,7 +266,7 @@ class Orders extends Controller
         $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
      
         $order->update(['ready_at' => Carbon::now('Europe/Kyiv')->format('H:i'), 'message' => $message, 'message_id' => $response->telegraphMessageId(), 'ready' => true]);
-        $this->wsMessage('order_updated');
+        wsMessage('order_updated');
         
         return to_route('orders.index');
     }
@@ -306,7 +306,7 @@ class Orders extends Controller
         $this->deleteMessage($order->message_id);
         $order->update([ 'status' => OrderStatus::CANCELLED ]);
         
-        $this->wsMessage('order_updated');
+        wsMessage('order_updated');
         
         return to_route('orders.index')->with('message', 'order.cancelled');
     }
@@ -317,7 +317,7 @@ class Orders extends Controller
         if (Gate::allows('change-order-status', $order)) {
             $time = Carbon::parse($order->approximate_courier_arrived_at)->$method($count);
             $order->update(['approximate_courier_arrived_at' => $time]);
-            $this->wsMessage('order_updated');
+            wsMessage('order_updated');
         }
 
         return to_route('orders.index');
@@ -338,7 +338,7 @@ class Orders extends Controller
         $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
      
         $order->update([ 'prepared_at' =>  $time, 'message' => $message, 'message_id' => $response->telegraphMessageId()]);
-        $this->wsMessage('order_updated');
+        wsMessage('order_updated');
         
         return to_route('orders.index');
     }
@@ -379,12 +379,5 @@ class Orders extends Controller
     protected function deleteMessage($id)
     {
         \Telegraph::deleteMessage($id)->send();   
-    }
-
-    protected function wsMessage($message)
-    {
-        $client = new \WebSocket\Client(env('WS_URL'));
-        $client->text($message);
-        $client->close();
     }
 }
