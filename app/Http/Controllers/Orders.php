@@ -18,6 +18,7 @@ use App\Enums\Order\Status as OrderStatus;
 
 use App\Actions\Orders\EditOrdersForView;
 use App\Actions\Orders\GenerateMessage;
+use App\Actions\Orders\CalcPriceForDistance;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -68,29 +69,10 @@ class Orders extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OrdersRequest $request, Messages $messages, GenerateMessage $generateMessage)
+    public function store(OrdersRequest $request, Messages $messages, GenerateMessage $generateMessage, CalcPriceForDistance $calcPriceForDistance)
     {
-        //dd($request->distance);
-        $prices = City::find($request->city)->price;
-        if (array_key_exists('default', $prices)) {
-            $price = $prices['default'];
-        } else {
-            foreach ($prices as $distance => $value) {
-                //dd($request->distance);
-                $price = false;
-                if ($request->distance <= floatval(str_replace(",", ".", $distance)) * 1000) {
-                    $price = $value;
-                    break;
-                }
-            }
-        } //yes, foreach is bad here
-
-        if (!$price) {
-            
-            $price = end($prices);
-        }
-
-        //dd($price);
+        $price = $calcPriceForDistance(City::find($request->city)->price, $request);
+        dd($price);
 
         $data = $request->only(
             'place_id',
@@ -348,15 +330,6 @@ class Orders extends Controller
         $response = \Telegraph::html($message)->send();
 
         return $response;
-    }
-
-    protected function parseAddress($order)
-    {
-        $city = City::findOrFail($order->city_id)->city;
-        $city = $city != env('CITY') ?? '';
-        $address_info = str_contains($order->address_info, 'кв') ? $order->address_info : 'кв ' . $order->address_info;
-
-        return "$city $order->address, $address_info";
     }
 
     public function replyMessage($id, $reply)
