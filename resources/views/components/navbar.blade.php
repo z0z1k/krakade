@@ -52,8 +52,11 @@
         @endif
             <li class="nav-item">
                         <a href="{{ route('prices') }}" class="nav-link">Ціни</a>
-                    </li>
-            </ul>
+            </li>
+            <li class="nav-item">
+                        <a href="{{ route('info') }}" class="nav-link">Інформація для закладів</a>
+            </li>
+        </ul>
     </div>
 </div>
 </nav>

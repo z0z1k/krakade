@@ -337,7 +337,7 @@ class Orders extends Controller
 
     protected function updateKeyboard($orderId, $messageId, $text)
     {
-        $url = env('APP_URL') . '/orders/take/' . $orderId;
+        $url = env('APP_URL') . '/orders/' . $orderId . '/take';
 
         \Telegraph::replaceKeyboard(
             messageId: $messageId, 
