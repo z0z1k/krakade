@@ -94,9 +94,7 @@ class Orders extends Controller
         $id = Order::create($data)->id;
 
 
-        $this->updateKeyboard($id, $data['message_id'], 'Взяти замовлення');
-
-        //$this->attachKeyboard($id, $data['message_id'], 'Взяти замовлення');
+        $messages->updateKeyboard($id, $data['message_id'], 'Взяти замовлення');
         wsMessage('order_created');
 
         return to_route('orders.index')->with('message', 'order.created');
@@ -147,7 +145,7 @@ class Orders extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(OrdersRequest $request, string $id, GenerateMessage $generateMessage)
+    public function update(OrdersRequest $request, string $id, GenerateMessage $generateMessage, Messages $messages)
     {
         $request->validated();
 
@@ -162,7 +160,7 @@ class Orders extends Controller
         $message = $this->sendMessage($data['message']);
         $data['message_id'] = $message->telegraphMessageId();
         $text = $order->courier->name ?? $order->status->text();
-        $this->updateKeyboard($id, $data['message_id'], $text);
+        $messages->updateKeyboard($id, $data['message_id'], $text);
         $order->update($data);
 
         wsMessage('order_updated');
@@ -178,7 +176,7 @@ class Orders extends Controller
         //
     }
 
-    public function take($id)
+    public function take($id, Messages $messages)
     {
         $order = Order::findOrFail($id);
         if ($order->status != OrderStatus::CREATED) {
@@ -186,7 +184,7 @@ class Orders extends Controller
         }
 
         $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'approximate_courier_arrived_at' => $order->prepared_at]);
-        $this->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
+        $messages->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
 
         wsMessage('order_updated');
         return to_route('orders.index');
@@ -208,10 +206,10 @@ class Orders extends Controller
         return to_route('orders.index');
     }
 
-    public function get($id)
+    public function get($id, Messages $messages)
     {
         $order = Order::findOrFail($id);
-        $this->updateKeyboard($order->id, $order->message_id, OrderStatus::TAKEN->text());
+        $messages->updateKeyboard($order->id, $order->message_id, OrderStatus::TAKEN->text());
         $data = ['status' => OrderStatus::TAKEN, 'taken_at' => Carbon::now('Europe/Kyiv')->toDateTimeString()];
         
         if (!$order->is_ready) {
@@ -219,7 +217,7 @@ class Orders extends Controller
             $data['prepared_at'] = Carbon::now('Europe/Kyiv')->toDateTimeString();
         }
         $order->update($data);
-                wsMessage('order_updated'); 
+        wsMessage('order_updated'); 
            
         return to_route('orders.index');
     }
@@ -235,7 +233,7 @@ class Orders extends Controller
         return to_route('orders.index');
     }
 
-    public function ready($id)
+    public function ready($id, Messages $messages)
     {
         $order = Order::findOrFail($id);
 
@@ -243,7 +241,7 @@ class Orders extends Controller
         $this->deleteMessage($order->message_id);
         $response = $this->sendMessage($message);
         $text = $order->courier->name ?? $order->status->text();
-        $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
+        $messages->updateKeyboard($id, $response->telegraphMessageId(), $text);
      
         $order->update(['ready_at' => Carbon::now('Europe/Kyiv')->format('H:i'), 'message' => $message, 'message_id' => $response->telegraphMessageId(), 'ready' => true]);
         wsMessage('order_updated');

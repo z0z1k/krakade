@@ -42,4 +42,16 @@ class Telegram implements Messages
             ])
         )->send();
     }
+
+    public function updateKeyboard($orderId, $messageId, $text)
+    {
+        $url = env('APP_URL') . '/orders/' . $orderId . '/take';
+
+        \Telegraph::replaceKeyboard(
+            messageId: $messageId, 
+            newKeyboard: Keyboard::make()->buttons([
+                Button::make($text)->url($url),
+            ])
+        )->send();
+    }
 }
