@@ -9,13 +9,17 @@ use App\Models\User;
 use App\Models\Order;
 use Illuminate\Support\Facades\Gate;
 
+use App\Actions\Stats\ChangeFormatTimeForView;
+
 class Stats extends Controller
 {
-    public function show($id)
+    public function show($id, ChangeFormatTimeForView $changeFormatTimeForView)
     {
         $user = User::findOrFail($id);
         $isCourier = Gate::allows('courier');
-        $ordersCnt = Order::where('courier_id', $id)->count();
-        return view('courier.show', compact('user', 'isCourier', 'ordersCnt'));
+
+        $orders = $changeFormatTimeForView(Order::where('courier_id', $id)->with('place')->get());
+        
+        return view('courier.show', compact('user', 'isCourier', 'orders'));
     }
 }
