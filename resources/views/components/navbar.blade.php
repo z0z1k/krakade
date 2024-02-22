@@ -17,10 +17,10 @@
             </li>
             @can('place')
                 <li class="nav-item">
-                    <a href="{{ route('orders.delivered') }}" class="nav-link ">Виконані замовлення</a>
+                    <a href="{{ route('orders.delivered') }}" class="nav-link ">Виконані</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('orders.cancelled') }}" class="nav-link ">Скасовані замовлення</a>
+                    <a href="{{ route('orders.cancelled') }}" class="nav-link ">Скасовані</a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('places.index') }}" class="nav-link ">Заклади</a>

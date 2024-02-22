@@ -15,16 +15,18 @@
             <th>Заявлений час приготування</th>
             <th>Отримав</th>
             <th>Доставив</th>
+            <th>Час доставки</th>
             <th>~</th>
         </tr>
         @foreach($orders as $order)
         <tr>
-            <td>{{ $order->place->name }}</td>
+            <th>{{ $order->place->name }}</th>
             <th>{{ $order->address }}</th>
             <td>{{ $order->date }}</td>
             <td>{{ $order->approximate_ready_at }}</td>
             <td>{{ $order->taken_at }}</td>
             <td>{{ $order->delivered_at }}</td>
+            <td>{{ $order->deliveryTime }}хв</td>
             <td><a href="{{ route('orders.show', $order->id) }}">+</a></td>
         </tr>
         @endforeach
