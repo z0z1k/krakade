@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://192.168.0.116:8080");
+var socket = new WebSocket(wsURL);
 
 socket.onmessage = function(event) {
     location.reload();

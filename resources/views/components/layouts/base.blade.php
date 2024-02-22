@@ -10,6 +10,9 @@
     <title>{{ $title }}</title>
     @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/main.css', 'resources/css/loader.css'])
 </head>
+<script>
+    var wsURL = '{{ env('WS_URL') }}';
+</script>
 <body>
     <div class="wrapper">
         <header class="header">    
