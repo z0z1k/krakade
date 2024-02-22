@@ -1,4 +1,4 @@
-<x-layouts.base title="Login">
+<x-layouts.base title="Увійти">
     <div class="card">
 		<div class="card-body">
 			<div class="card-text">
@@ -7,12 +7,12 @@
                         <x-form-input name="email" label="Email" />
                     </div>
 					<div class="mb-3">
-                        <x-form-input name="password" label="Password" type="password" />
+                        <x-form-input name="password" label="Пароль" type="password" />
                     </div>
 					<div class="mb-3">
-                        <x-form-checkbox name="remember" label="Remember me" checked />
+                        <x-form-checkbox name="remember" label="Запам'ятати мене" checked />
                     </div>
-					<button class="btn btn-primary">Login</button>
+					<button class="btn btn-primary">Увійти</button>
 				</x-form>
 			</div>
 		</div>

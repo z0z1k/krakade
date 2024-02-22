@@ -42,6 +42,9 @@
                 <li class="nav-item">
                     <a href="{{ route('profile.info') }}" class="nav-link ">Редагувати профіль</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('login.exit') }}" class="nav-link ">Вийти</a>
+                </li>
         @else                        
             <li class="nav-item">
                 <a href="{{ route('registration.create') }}" class="nav-link ">Реєстрація</a>
