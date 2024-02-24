@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\Orders\Store as OrdersRequest;
 
 use App\Models\Order;
 use App\Models\Place;
 use App\Models\City;
-use App\Models\User;
 
-use DefStudio\Telegraph\Models\TelegraphChat;
 use DefStudio\Telegraph\Keyboard\Button;
 use DefStudio\Telegraph\Keyboard\Keyboard;
 
@@ -19,6 +16,7 @@ use App\Enums\Order\Status as OrderStatus;
 use App\Actions\Orders\EditOrdersForView;
 use App\Actions\Orders\GenerateMessage;
 use App\Actions\Orders\CalcPriceForDistance;
+use App\Actions\Orders\UpdateMessage;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -28,14 +26,11 @@ use Carbon\Carbon;
 use App\Contracts\Messages;
 class Orders extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(EditOrdersForView $editOrdersForView)
-    {        
+    {
         $courier = Gate::allows('courier');
         $place = Gate::allows('place');
-        $orders = $courier ? Order::activeCourier()->get() : Order::activePlace()->get();     
+        $orders = $courier ? Order::activeCourier()->get() : Order::activePlace()->get();
 
         $orders = $editOrdersForView($orders);
 
@@ -47,8 +42,8 @@ class Orders extends Controller
     {
         $orders = Order::cancelled()->get();
         $title = 'Скасовані замовлення';
-        $courier = Gate::allows('courier') ? true : false;
-        $place = Gate::allows('place') ? true : false;
+        $courier = Gate::allows('courier');
+        $place = Gate::allows('place');
         return view('orders.cancelled', compact('orders', 'title', 'courier', 'place'));
     }
 
@@ -58,21 +53,15 @@ class Orders extends Controller
         return view('orders.delivered', compact('orders'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create($place)
     {
         return view('orders.create', [ 'place' => Place::findOrFail($place), 'cities' => City::all()->pluck('city', 'id') ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(OrdersRequest $request, Messages $messages, GenerateMessage $generateMessage, CalcPriceForDistance $calcPriceForDistance)
     {
         $price = $calcPriceForDistance(City::find($request->city)->price, $request);
-        
+
         $data = $request->only(
             'place_id',
             'location',
@@ -100,9 +89,6 @@ class Orders extends Controller
         return to_route('orders.index')->with('message', 'order.created');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $order = Order::findOrFail($id);
@@ -134,28 +120,20 @@ class Orders extends Controller
         return view('orders.show', compact('order', 'link', 'method', 'text'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         return view('orders.edit', [ 'order' => Order::findOrFail($id) ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(OrdersRequest $request, string $id, GenerateMessage $generateMessage, Messages $messages)
+    public function update(OrdersRequest $request, string $id, GenerateMessage $generateMessage, Messages $messages, UpdateMessage $updateMessage)
     {
         $request->validated();
 
         $order = Order::findOrFail($id);
 
         $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
-        $data['message'] = $generateMessage($data + [ 'place_id' => $order->place_id]);
-        if(!str_contains($data['message'], 'Оновлення!')){
-            $data['message']  = 'Оновлення! ' . $data['message'];
-        }
+        $data['message'] = $updateMessage($generateMessage($data + [ 'place_id' => $order->place_id]));
+
         $this->deleteMessage($order->message_id);
         $message = $this->sendMessage($data['message']);
         $data['message_id'] = $message->telegraphMessageId();
@@ -168,9 +146,6 @@ class Orders extends Controller
         return to_route('orders.index')->with('message', 'order.updated');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //
@@ -184,7 +159,7 @@ class Orders extends Controller
         }
 
         $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'approximate_courier_arrived_at' => $order->prepared_at]);
-        $messages->updateKeyboard($order->id, $order->message_id, Auth::user()->name);       
+        $messages->updateKeyboard($order->id, $order->message_id, Auth::user()->name);
 
         wsMessage('order_updated');
         return to_route('orders.index');
@@ -211,14 +186,14 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         $messages->updateKeyboard($order->id, $order->message_id, OrderStatus::TAKEN->text());
         $data = ['status' => OrderStatus::TAKEN, 'taken_at' => Carbon::now('Europe/Kyiv')->toDateTimeString()];
-        
+
         if (!$order->is_ready) {
             $data['is_ready'] = true;
             $data['prepared_at'] = Carbon::now('Europe/Kyiv')->toDateTimeString();
         }
         $order->update($data);
-        wsMessage('order_updated'); 
-           
+        wsMessage('order_updated');
+
         return to_route('orders.index');
     }
 
@@ -227,9 +202,9 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         $this->deleteMessage($order->message_id);
         $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now('Europe/Kyiv')->toDateTimeString() ]);
-        
+
         wsMessage('order_updated');
-        
+
         return to_route('orders.index');
     }
 
@@ -242,10 +217,10 @@ class Orders extends Controller
         $response = $this->sendMessage($message);
         $text = $order->courier->name ?? $order->status->text();
         $messages->updateKeyboard($id, $response->telegraphMessageId(), $text);
-     
+
         $order->update(['ready_at' => Carbon::now('Europe/Kyiv')->format('H:i'), 'message' => $message, 'message_id' => $response->telegraphMessageId(), 'ready' => true]);
         wsMessage('order_updated');
-        
+
         return to_route('orders.index');
     }
 
@@ -268,7 +243,7 @@ class Orders extends Controller
         $this->courierUpdateTime($id, 'addMinutes');
 
         return to_route('orders.index');
-    
+
     }
 
     public function courierMinusTime($id)
@@ -283,9 +258,9 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         $this->deleteMessage($order->message_id);
         $order->update([ 'status' => OrderStatus::CANCELLED ]);
-        
+
         wsMessage('order_updated');
-        
+
         return to_route('orders.index')->with('message', 'order.cancelled');
     }
 
@@ -303,7 +278,7 @@ class Orders extends Controller
 
     protected function updateTime($id, $method, $count = 5)
     {
-        $order = Order::findOrFail($id);        
+        $order = Order::findOrFail($id);
         $time = Carbon::parse($order->prepared_at)->$method($count);
 
         $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", $time->format('H:i'), $order->message);
@@ -314,10 +289,10 @@ class Orders extends Controller
         $response = $this->sendMessage($message);
         $text = $order->courier->name ?? $order->status->text();
         $this->updateKeyboard($id, $response->telegraphMessageId(), $text);
-     
+
         $order->update([ 'prepared_at' =>  $time, 'message' => $message, 'message_id' => $response->telegraphMessageId()]);
         wsMessage('order_updated');
-        
+
         return to_route('orders.index');
     }
 
@@ -328,17 +303,12 @@ class Orders extends Controller
         return $response;
     }
 
-    public function replyMessage($id, $reply)
-    {
-        \Telegraph::message($reply)->reply($id)->send();
-    }
-
     protected function updateKeyboard($orderId, $messageId, $text)
     {
         $url = env('APP_URL') . '/orders/' . $orderId . '/take';
 
         \Telegraph::replaceKeyboard(
-            messageId: $messageId, 
+            messageId: $messageId,
             newKeyboard: Keyboard::make()->buttons([
                 Button::make($text)->url($url),
             ])
@@ -347,6 +317,6 @@ class Orders extends Controller
 
     protected function deleteMessage($id)
     {
-        \Telegraph::deleteMessage($id)->send();   
+        \Telegraph::deleteMessage($id)->send();
     }
 }

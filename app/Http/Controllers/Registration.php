@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\Registration\Store as StoreRequest;
 
 use App\Models\User;
@@ -24,7 +23,7 @@ class Registration extends Controller
         $user = User::create($data);
         Auth::login($user);
 
-        $role = Role::where('name', $request->userRole)->first();        
+        $role = Role::where('name', $request->userRole)->first();
         User::findOrFail(Auth::user()->id)->roles()->sync($role->id);
 
         if ($role->name == 'place') {

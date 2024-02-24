@@ -1,6 +1,7 @@
 @props([
     'title'
 ])
+@php var_dump([1,2,3,4,5]) @endphp
 
 <!DOCTYPE html>
 <html lang="en">

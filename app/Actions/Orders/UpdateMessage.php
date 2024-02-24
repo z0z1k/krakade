@@ -10,6 +10,6 @@ class UpdateMessage
             $message  = 'Оновлення! ' . $message;
         }
         
-        return $message . 1;
+        return $message;
     }
 }
