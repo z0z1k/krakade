@@ -1,7 +1,6 @@
 @props([
     'title'
 ])
-@php var_dump([1,2,3,4,5]) @endphp
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +15,7 @@
 </script>
 <body>
     <div class="wrapper">
-        <header class="header">    
+        <header class="header">
             <x-navbar />
         </header>
 
@@ -39,6 +38,6 @@
         </footer>
     </div>
 
-    
+
 </body>
 </html>

@@ -14,6 +14,7 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 use App\Enums\Order\Status as OrderStatus;
 
 use App\Actions\Orders\EditOrdersForView;
+use App\Actions\Orders\PrepareOrderShowForView;
 use App\Actions\Orders\GenerateMessage;
 use App\Actions\Orders\CalcPriceForDistance;
 use App\Actions\Orders\UpdateMessage;
@@ -89,66 +90,20 @@ class Orders extends Controller
         return to_route('orders.index')->with('message', 'order.created');
     }
 
-    public function show(string $id)
+    public function show(string $id, PrepareOrderShowForView $prepareOrderShowForView)
     {
-        $order = Order::findOrFail($id);
-        $order['date'] = Carbon::parse($order->created_at)->format('d.m.y D');
-        $order->be_ready = Carbon::parse($order->be_ready)->format('H:i');
-        $order->ready_at = Carbon::parse($order->ready_at)->format('H:i');
-        switch ($order->status) {
-            case OrderStatus::CREATED:
-                $link = 'orders.show';
-                $method = 'get';
-                $text = OrderStatus::CREATED->text();
-                break;
-            case OrderStatus::COURIER_FOUND:
-                $link = 'orders.get';
-                $method = 'post';
-                $text = 'Отримав замовлення';
-                break;
-            case OrderStatus::TAKEN:
-                $link = 'orders.setDelivered';
-                $method = 'post';
-                $text = 'Доставлено';
-                break;
-            default:
-                $link = 'orders.show';
-                $method = 'get';
-                $text = 'Замовлення закрите';
-                break;
-        }
+        $order = $prepareOrderShowForView(Order::findOrFail($id));
+
+        $link = $order->status->routeLink();
+        $method = $order->status->routeMethod();
+        $text = $order->status->text();
+
         return view('orders.show', compact('order', 'link', 'method', 'text'));
     }
 
     public function edit(string $id)
     {
         return view('orders.edit', [ 'order' => Order::findOrFail($id) ]);
-    }
-
-    public function update(OrdersRequest $request, string $id, GenerateMessage $generateMessage, Messages $messages, UpdateMessage $updateMessage)
-    {
-        $request->validated();
-
-        $order = Order::findOrFail($id);
-
-        $data = $request->only('client_address', 'client_phone', 'be_ready', 'payment_type', 'comment');
-        $data['message'] = $updateMessage($generateMessage($data + [ 'place_id' => $order->place_id]));
-
-        $this->deleteMessage($order->message_id);
-        $message = $this->sendMessage($data['message']);
-        $data['message_id'] = $message->telegraphMessageId();
-        $text = $order->courier->name ?? $order->status->text();
-        $messages->updateKeyboard($id, $data['message_id'], $text);
-        $order->update($data);
-
-        wsMessage('order_updated');
-
-        return to_route('orders.index')->with('message', 'order.updated');
-    }
-
-    public function destroy(string $id)
-    {
-        //
     }
 
     public function take($id, Messages $messages)
