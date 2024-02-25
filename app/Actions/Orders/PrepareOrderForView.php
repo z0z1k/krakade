@@ -5,7 +5,7 @@ namespace App\Actions\Orders;
 use App\Models\City;
 use Carbon\Carbon;
 
-class PrepareOrderShowForView
+class PrepareOrderForView
 {
     public function __invoke($order)
     {

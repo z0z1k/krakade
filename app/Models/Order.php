@@ -65,17 +65,17 @@ class Order extends Model
 
     public function scopeCancelled($query)
     {
-        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::CANCELLED);
+        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->with('place')->where('status', OrderStatus::CANCELLED)->orderByDesc('created_at');
     }
 
     public function scopeDeliveredAll($query)
     {
-        return $query->where('status', OrderStatus::DELIVERED);
+        return $query->where('status', OrderStatus::DELIVERED)->orderByDesc('created_at');
     }
 
     public function scopeDeliveredPlace($query)
     {
-        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::DELIVERED);
+        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::DELIVERED)->orderByDesc('created_at');
     }
 
     protected $casts = [

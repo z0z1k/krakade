@@ -13,8 +13,8 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 
 use App\Enums\Order\Status as OrderStatus;
 
-use App\Actions\Orders\EditOrdersForView;
-use App\Actions\Orders\PrepareOrderShowForView;
+use App\Actions\Orders\PrepareOrdersForView;
+use App\Actions\Orders\PrepareOrderForView;
 use App\Actions\Orders\GenerateMessage;
 use App\Actions\Orders\CalcPriceForDistance;
 use App\Actions\Orders\UpdateMessage;
@@ -27,30 +27,28 @@ use Carbon\Carbon;
 use App\Contracts\Messages;
 class Orders extends Controller
 {
-    public function index(EditOrdersForView $editOrdersForView)
+    public function index(PrepareOrdersForView $prepareOrdersForView)
     {
         $courier = Gate::allows('courier');
         $place = Gate::allows('place');
         $orders = $courier ? Order::activeCourier()->get() : Order::activePlace()->get();
 
-        $orders = $editOrdersForView($orders);
+        $orders = $prepareOrdersForView($orders);
 
         $title = 'Активні замовлення';
         return view('orders.index', compact('orders', 'title', 'courier', 'place'));
     }
 
-    public function cancelled()
+    public function cancelled(PrepareOrdersForView $prepareOrdersForView)
     {
-        $orders = Order::cancelled()->get();
-        $title = 'Скасовані замовлення';
-        $courier = Gate::allows('courier');
-        $place = Gate::allows('place');
-        return view('orders.cancelled', compact('orders', 'title', 'courier', 'place'));
+        $orders = $prepareOrdersForView(Order::cancelled()->get());
+        return view('orders.cancelled', [ 'orders' => $orders, 'title' => 'Скасовані замовлення']);
     }
 
-    public function delivered()
+    public function delivered(PrepareOrdersForView $prepareOrdersForView)
     {
         $orders = Gate::allows('courier') ? Order::deliveredAll()->get() : Order::deliveredPlace()->get();
+        $orders = $prepareOrdersForView($orders);
         return view('orders.delivered', compact('orders'));
     }
 
@@ -90,9 +88,9 @@ class Orders extends Controller
         return to_route('orders.index')->with('message', 'order.created');
     }
 
-    public function show(string $id, PrepareOrderShowForView $prepareOrderShowForView)
+    public function show(string $id, PrepareOrderForView $prepareOrderForView)
     {
-        $order = $prepareOrderShowForView(Order::findOrFail($id));
+        $order = $prepareOrderForView(Order::findOrFail($id));
 
         $link = $order->status->routeLink();
         $method = $order->status->routeMethod();

@@ -10,10 +10,11 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\City;
 
-class EditOrdersForView
+class PrepareOrdersForView
 {
     public function __invoke($orders) {
         foreach($orders as $order) {
+            $order->date = Carbon::parse($order->created_at)->format('d.m.y');
             $order['address'] = $this->parseAddress($order);
             if ($order->approximate_courier_arrived_at) {
                 $order->approximate_courier_arrived_at = Carbon::parse($order->approximate_courier_arrived_at)->format('H:i');
@@ -21,9 +22,9 @@ class EditOrdersForView
             if ($order->payment) {
                 $order->payment .= '₴';
             } else {
-                $order->payment = 'Оплата не потрібна';   
+                $order->payment = 'Оплата не потрібна';
             }//yes, this is bad again
-            $order['can_edit'] = Gate::allows('change-order-status', $order);           
+            $order['can_edit'] = Gate::allows('change-order-status', $order);
             $order->approximate_ready_at = Carbon::parse($order->approximate_ready_at)->format('H:i'); //why created_at is carbon object, but this string?
             $order->prepared_at = Carbon::parse($order->prepared_at)->format('H:i');
             if ($order->taken_at) {
@@ -31,7 +32,7 @@ class EditOrdersForView
             }
 
             $order['courier'] = User::where('id', $order->courier_id)->first(); //fix this
-            
+
         }
 
     return $orders;

@@ -1,26 +1,17 @@
 <x-layouts.base title="{{ $title }}">
 <div class="row">
-    @foreach($orders as $order)
-    
-    <div class="col-sm-6">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">{{ $order->place->name }}</h5>
-                <p class="card-text">
-                    {{ $order->client_address }}<br>
-                    {{ $order->client_phone }}<br>
-                    {{ $order->comment }}<br>
-                    {{ $order->payment_type }}<br>
-                    <span class="badge text-bg-info">
-                    {{ $order->status->text() }}<br>
-                    {{ $order->courier->name ?? '' }}
-                    {{ $order->courier->phone ?? ''}}
-                </p>
-                <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>
-                </div>
-        </div>
-    </div>
-    @endforeach
-</div>
+        <table class="table">
+            @foreach($orders as $order)
+                <tr>
+                    <th>{{ $order->date }}</th>
+                    <th>{{ $order->place->name }}</th>
+                    <th>{{ $order->address }}</th>
+                    <th>{{ $order->client_phone }}</th>
+                    <th>{{ $order->payment }}</th>
+                    <th>{{ $order->comment }}</th>
+                    <th><a class="link-dark" href="{{ route('orders.show', $order->id) }}">Повна інформація</a></th>
+                </tr>
+            @endforeach
+        </table>
 @vite(['resources/js/websocket.js'])
 </x-layouts.base>

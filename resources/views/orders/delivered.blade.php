@@ -1,11 +1,11 @@
 <x-layouts.base title="Виконані замовлення">
 <div class="row">
     @foreach($orders as $order)
-    
+
     <div class="col-sm-4">
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">{{ $order->place->name }}</h5>
+                <h5 class="card-title">{{ $order->place->name }} {{ $order->date }}</h5>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/map.png') }}">{{ $order->address }}
@@ -26,17 +26,20 @@
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/comment.png') }}">{{ $order->comment }}
                     </li>
-                    @endif                    
+                    @endif
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/payment.png') }}">{{ $order->payment }}
                     </li>
                     <li class="list-group-item">
                         Ціна: {{ $order->price }}
                     </li>
+                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark">Повна інформація</a>
                 </ul>
                 </div>
         </div>
     </div>
+
+
     @endforeach
 </div>
 @vite(['resources/js/websocket.js'])
