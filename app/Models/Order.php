@@ -70,12 +70,12 @@ class Order extends Model
 
     public function scopeDeliveredAll($query)
     {
-        return $query->where('status', OrderStatus::DELIVERED)->orderByDesc('created_at');
+        return $query->where('status', OrderStatus::DELIVERED)->with('place')->orderByDesc('created_at');
     }
 
     public function scopeDeliveredPlace($query)
     {
-        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::DELIVERED)->orderByDesc('created_at');
+        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::DELIVERED)->with('place')->orderByDesc('created_at');
     }
 
     protected $casts = [
