@@ -47,8 +47,7 @@ class Orders extends Controller
 
     public function delivered(PrepareOrdersForView $prepareOrdersForView)
     {
-        $orders = Gate::allows('courier') ? Order::deliveredAll()->get() : Order::deliveredPlace()->get();
-        $orders = $prepareOrdersForView($orders);
+        $orders = $prepareOrdersForView(Gate::allows('courier') ? Order::deliveredAll()->get() : Order::deliveredPlace()->get());
         return view('orders.delivered', compact('orders'));
     }
 

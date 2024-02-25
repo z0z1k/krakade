@@ -54,13 +54,13 @@ class Order extends Model
 
     public function scopeActiveCourier($query)
     {
-        return $query->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->with('place', 'courier', 'place');
+        return $query->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->with('place', 'courier');
     }
 
     public function scopeActivePlace($query)
     {
         return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))
-        ->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ]);
+        ->whereNotIn('status', [ OrderStatus::DELIVERED, OrderStatus::CANCELLED ])->with('place', 'courier');
     }
 
     public function scopeCancelled($query)
@@ -70,12 +70,12 @@ class Order extends Model
 
     public function scopeDeliveredAll($query)
     {
-        return $query->where('status', OrderStatus::DELIVERED)->with('place')->orderByDesc('created_at');
+        return $query->where('status', OrderStatus::DELIVERED)->with('place', 'courier')->orderByDesc('created_at');
     }
 
     public function scopeDeliveredPlace($query)
     {
-        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::DELIVERED)->with('place')->orderByDesc('created_at');
+        return $query->whereIn('place_id', Place::where('user_id', Auth::user()->id)->pluck('id'))->where('status', OrderStatus::DELIVERED)->with('place', 'courier')->orderByDesc('created_at');
     }
 
     protected $casts = [

@@ -31,8 +31,6 @@ class PrepareOrdersForView
                 $order->taken_at = Carbon::parse($order->taken_at)->format('H:i');
             }
 
-            $order['courier'] = User::where('id', $order->courier_id)->first(); //fix this
-
         }
 
     return $orders;
