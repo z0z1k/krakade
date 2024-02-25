@@ -22,7 +22,7 @@ class ChangeFormatTimeForView
             $order->deliveryTime = $takenAt->diffInMinutes($deliveredAt);
             $orders->averageDeliveryTime += $order->deliveryTime;
         }
-        $orders->averageDeliveryTime = round($orders->averageDeliveryTime / $orders->count());
+        $orders->averageDeliveryTime = $orders->count() > 0 ? (round($orders->averageDeliveryTime / $orders->count())) : 0;
 
         return $orders;
     }
