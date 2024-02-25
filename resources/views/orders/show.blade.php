@@ -1,60 +1,45 @@
-<x-layouts.base title="Замовлення">
-{{ $order->date }}
+<x-layouts.base title="Замовлення # {{ $order->id }} {{ $order->date }}">
 
-<table class="table table-bordered">
-    <tr>
-        <td>Статус</td>
-        <td>{{ $order->status->text() }}</td>
-    </tr>
-    <tr>
-        <td>Заклад</td>
-        <td>{{ $order->place->name }}</td>
-    </tr>
-    <tr>
-        <td>Кур'єр</td>
-        <td>{{ $order->courier->name ?? '' }}</td>
-    </tr>
-    <tr>
-        <td>Адреса</td>
-        <td>{{ $order->client_address }}</td>
-    </tr>
-    <tr>
-        <td>Заявлений час приготування</td>
-        <td>{{ $order->be_ready }}</td>
-    </tr>
-    <tr>
-        <td>Фактичний час приготування</td>
-        <td>{{ $order->ready_at }}</td>
-    </tr>
-    <tr>
-        <td>Номер клієнта</td>
-        <td>{{ $order->client_phone }}</td>
-    </tr>
-    <tr>
-        <td>Оплата</td>
-        <td>{{ $order->payment_type }}</td>
-    </tr>
-    <tr>
-        <td>Коментар</td>
-        <td>{{ $order->comment }}</td>
-    </tr>
-    <tr>
-        <td>Замовлення створено</td>
-        <td>{{ $order->created_at->format('H:i') }}</td>
-    </tr>
-    <tr>
-        <td>Отримано</td>
-        <td>{{ $order->get_at }}</td>
-    </tr>
-    <tr>
-        <td>Доставлено</td>
-        <td>{{ $order->delivered_at }}</td>
-    </tr>    
-</table>
+    <dl class="row">
+        <dt class="col-sm-3">Статус</dt>
+        <dd class="col-sm-9">{{ $order->status->text() }}</dd>
 
+        <dt class="col-sm-3">Заклад</dt>
+        <dd class="col-sm-9">{{ $order->place->name }}</dd>
 
-<x-form method="{{ $method }}" action="{{ route($link, $order->id) }}">
+        <dt class="col-sm-3">Кур'єр</dt>
+        <dd class="col-sm-9">{{ $order->courier?->name}}</dd>
+
+        <dt class="col-sm-3">Адреса</dt>
+        <dd class="col-sm-9">{{ $order->client_address }}</dd>
+
+        <dt class="col-sm-3">Коментар</dt>
+        <dd class="col-sm-9">{{ $order->comment }}</dd>
+
+        <dt class="col-sm-3">Заявлений час приготування</dt>
+        <dd class="col-sm-9">{{ $order->approximate_ready_at }}</dd>
+
+        <dt class="col-sm-3">Номер клієнта</dt>
+        <dd class="col-sm-9">{{ $order->client_phone }}</dd>
+
+        <dt class="col-sm-3">Оплата</dt>
+        <dd class="col-sm-9">{{ $order->payment ?? 'Без оплати' }}</dd>
+
+        <dt class="col-sm-3">Замовлення створено</dt>
+        <dd class="col-sm-9">{{ $order->created_at->format('H:i') }}</dd>
+
+        <dt class="col-sm-3">Отримано</dt>
+        <dd class="col-sm-9">{{ $order->taken_at }}</dd>
+
+        <dt class="col-sm-3">Доставлено</dt>
+        <dd class="col-sm-9">{{ $order->delivered_at }}</dd>
+
+        <dt class="col-sm-3">Ціна доставки</dt>
+        <dd class="col-sm-9">{{ $order->price }}</dd>
+    </dl>
+
+<!--<x-form method="{{ $method }}" action="{{ route($link, $order->id) }}">
     <button class="btn btn-primary">{{ $text }}</button>
-</x-form>
+</x-form>-->
 
 </x-layouts.base>
