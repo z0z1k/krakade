@@ -2,10 +2,12 @@
 <div class="col-6 col-md-4">
         <div class="card mb-3">
             <div class="card-body">
-                
+
             <div class="row">
                 <div class="col">
-                    <h5 class="card-title">{{ $order->place->name }}</h5>
+                    <a href="{{ route('places.show', $order->place->id) }}" class="link link-dark">
+                        <h5 class="card-title">{{ $order->place->name }}</h5>
+                    </a>
                 </div>
                 <div class="col">
                     <span class="badge text-bg-info">
@@ -24,7 +26,7 @@
                     </li>
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/time.png') }}">
-                        Готове о 
+                        Готове о
                         @if(!$order->is_ready)<a href="{{ route('orders.minusTime', $order->id) }}" class="btn btn-outline-success btn-sm">&#8656;</a>@endif
                         {{ $order->prepared_at }}
                         @if(!$order->is_ready)<a href="{{ route('orders.plusTime', $order->id) }}" class="btn btn-outline-success btn-sm">&#8658;</a>@endif
@@ -43,7 +45,7 @@
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/comment.png') }}">{{ $order->comment }}
                     </li>
-                    @endif                    
+                    @endif
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/payment.png') }}">{{ $order->payment }}
                     </li>
@@ -55,7 +57,7 @@
                 <x-form method="put" action="{{ route('orders.cancel', $order->id) }}">
                     <button class="btn btn-outline-danger">Скасувати</button>
                 </x-form>
-                
+
                 <p class="card-text">
                     <span class="badge text-bg-info">Створено: {{ $order->created_at->format('H:i') }}</span>
                     <span class="badge text-bg-info">Заявлений час приготування: {{ $order->approximate_ready_at }}</span>

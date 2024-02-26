@@ -39,7 +39,7 @@ class PrepareOrdersForView
 
     public function parseAddress($order)
     {
-        $city = $order->city;
+        $city = $order->city->city;
         $city = $city != env('CITY') ?? '';
         $address_info = str_contains($order->address_info, 'кв') ? $order->address_info : 'кв ' . $order->address_info;
 

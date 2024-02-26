@@ -2,10 +2,12 @@
 <div class="col-6 col-md-4">
         <div class="card mb-3">
             <div class="card-body">
-                
+
             <div class="row">
                 <div class="col">
-                    <h5 class="card-title">{{ $order->place->name }}</h5>
+                    <a href="{{ route('places.show', $order->place->id) }}" class="link link-dark">
+                        <h5 class="card-title">{{ $order->place->name }}</h5>
+                    </a>
                 </div>
                 <div class="col">
                     <span class="badge text-bg-info">
@@ -44,7 +46,7 @@
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/comment.png') }}">{{ $order->comment }}
                     </li>
-                    @endif                    
+                    @endif
                     <li class="list-group-item">
                         <img src="{{ URL::to('/assets/img/icons/payment.png') }}">{{ $order->payment }}
                     </li>
@@ -52,9 +54,9 @@
                         Ціна: {{ $order->price }}
                     </li>
                 </ul>
-                
+
                 @if(!$order->courier)
-                    <a href="{{ route('orders.take', $order->id) }}" class="btn btn-outline-dark">Взяти замовлення</a>         
+                    <a href="{{ route('orders.take', $order->id) }}" class="btn btn-outline-dark">Взяти замовлення</a>
                 @elseif($order->can_edit)
                 @if($order->taken_at == null)
                     <a href="{{ route('orders.changeCourier', $order->id) }}" class="btn btn-outline-dark">Перепризначити</a>
@@ -63,7 +65,7 @@
                         <button class="btn btn-outline-dark">Змінити статус: {{ $order->status->textForCourier() }}</button>
                     </x-form>
                 @endif
-                
+
                 <p class="card-text">
                     <span class="badge text-bg-info">Створено: {{ $order->created_at->format('H:i') }}</span>
                     <span class="badge text-bg-info">Заявлений час приготування: {{ $order->approximate_ready_at }}</span>

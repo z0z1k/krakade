@@ -9,7 +9,11 @@
 
         @foreach($places as $place)
         <tr>
-            <td>{{ $place->name }}</td>
+            <td>
+                <a href="{{ route('places.show', $place->id) }}">
+                    {{ $place->name }}
+                </a>
+            </td>
             <td>{{ $place->address }}</td>
             <td><a href="{{ route('orders.create', [ 'place' => $place->id ]) }}">Створити замовлення</a></td>
         </tr>
