@@ -1,68 +1,46 @@
-let payment = document.getElementById('payment-checkbox');
-let paymentDiv = document.getElementById('payment-div');
+function setupCheckboxListener(checkboxId, divId) {
+    let checkbox = document.getElementById(checkboxId);
+    let div = document.getElementById(divId);
 
-if (payment.checked) {
-  paymentDiv.style.display = "block";
-}
-payment.addEventListener('change', function(){
-    if (this.checked) {
-        paymentDiv.style.display = "block";
-      } else {
-        //div.style.visibility = "hidden";
-        paymentDiv.style.display = "none";
-      }
-});
+    function toggleDivDisplay() {
+        div.style.display = checkbox.checked ? "block" : "none";
+    }
 
-let hard = document.getElementById('hard-checkbox');
-let hardDiv = document.getElementById('hard-div');
-
-if (hard.checked) {
-  hardDiv.style.display = "block";
-}
-hard.addEventListener('change', function(){
-    if (this.checked) {
-        hardDiv.style.display = "block";
-      } else {
-        //div.style.visibility = "hidden";
-        hardDiv.style.display = "none";
-      }
-});
-
-function stopDefAction(evt) {
-    evt.preventDefault();
+    toggleDivDisplay(); // Initial setup
+    checkbox.addEventListener('change', toggleDivDisplay);
 }
 
-let addressBtn = document.getElementById("addressBtn");
-let city = document.getElementById('city');
-let street = document.getElementById('street');
+function setupAddressParser() {
+    let city = document.getElementById('city');
+    let street = document.getElementById('street');
+    let loader = document.querySelector('.loader');
 
-city.addEventListener("change", parse);
-street.addEventListener("change", parse);
+    function parseAddress() {
+        loader.style.display = 'block';
+        let selectedCity = city.options[city.value - 1].textContent;
+        let data = { city: selectedCity, street: street.value };
+        let placeLocation = document.getElementById("placeLocation").textContent;
 
-let loader = document.querySelector('.loader');
-function parse(){
-    loader.style.display = 'block';
-    let select = document.getElementById('city');
-    let options = select.options;
-    let city = select.options[select.value-1].textContent;
-    
-    let data = {city:city,street:document.getElementById('street').value};
-    let placeLocation = document.getElementById("placeLocation").textContent;
-    
-    axios.post('/api/address/parse', data)
-        .then(
-                response => {
-                  //document.getElementById("location-input").value = response.data;
-                  //document.getElementById("map").innerHTML = 
-                  //"<img width='450' height='300' src='https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=400&center=lonlat:" + response.data + "&zoom=14&marker=lonlat:" + response.data + ";color:%23ff0000;size:small&apiKey=593087ab22f34ff9864cdc6579caf776'>";
-                  console.log(response.data);
-                  axios.get('/api/address/calc/' + placeLocation + '/' + response.data)
-                    .then(response => document.getElementById("distance").value = response.data); loader.style.display = 'none';
-                }).catch(
-                error => console.log(error)
-            )
+        axios.post('/api/address/parse', data)
+            .then(response => {
+                axios.get('/api/address/calc/' + placeLocation + '/' + response.data)
+                    .then(response => {
+                        document.getElementById("distance").value = response.data;
+                        loader.style.display = 'none';
+                    })
+                    .catch(error => console.log(error));
+            })
+            .catch(error => console.log(error));
+    }
+
+    city.addEventListener("change", parseAddress);
+    street.addEventListener("change", parseAddress);
+
+    if (street.value !== '') {
+        parseAddress();
+    }
 }
 
-if(street.value != ''){
-  parse();
-}
+setupCheckboxListener('payment-checkbox', 'payment-div');
+setupCheckboxListener('hard-checkbox', 'hard-div');
+setupAddressParser();

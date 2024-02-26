@@ -2,11 +2,12 @@
     <table class="table">
         <tr>
             <th>Ваші ролі:</th>
-            @foreach($user->roles as $role)        
+            @foreach($user->roles as $role)
                 <td>{{$role->name}}</td>
             @endforeach
         </tr>
     </table>
+    <a href="{{ route('profile.password.edit') }}" class="btn btn-success">Змінити пароль</a>
 
     <x-form method="put" action="{{ route('profile.update') }}">
         @bind($user)
@@ -21,10 +22,7 @@
         @endbind
     </x-form>
 
-    <x-form method="put" action="{{ route('generatetoken') }}">
-    <button>generate</button>
-    </x-from>
-    
-    <a href="{{ route('profile.password.edit') }}">Змінити пароль</a>
-    
+
+    <a href="{{ route('login.exit') }}" class="btn btn-danger mt-3">Вийти</a>
+
 </x-layouts.base>

@@ -38,8 +38,4 @@
         <dd class="col-sm-9">{{ $order->price }}</dd>
     </dl>
 
-<!--<x-form method="{{ $method }}" action="{{ route($link, $order->id) }}">
-    <button class="btn btn-primary">{{ $text }}</button>
-</x-form>-->
-
 </x-layouts.base>

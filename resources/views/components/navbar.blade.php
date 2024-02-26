@@ -25,7 +25,7 @@
                 <li class="nav-item">
                     <a href="{{ route('places.index') }}" class="nav-link ">Заклади</a>
                 </li>
-                @foreach(\App\Models\Place::where('user_id', Auth::user()->id)->get() as $place)                                
+                @foreach(\App\Models\Place::where('user_id', Auth::user()->id)->get() as $place)
                     <li class="nav-item">
                         <a href="{{ route('orders.create', $place->id) }}" class="nav-link ">{{$place->name}}</a>
                     </li>
@@ -42,10 +42,7 @@
                 <li class="nav-item">
                     <a href="{{ route('profile.info') }}" class="nav-link ">Редагувати профіль</a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('login.exit') }}" class="nav-link ">Вийти</a>
-                </li>
-        @else                        
+        @else
             <li class="nav-item">
                 <a href="{{ route('registration.create') }}" class="nav-link ">Реєстрація</a>
             </li>

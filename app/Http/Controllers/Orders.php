@@ -89,13 +89,7 @@ class Orders extends Controller
 
     public function show(string $id, PrepareOrderForView $prepareOrderForView)
     {
-        $order = $prepareOrderForView(Order::findOrFail($id));
-
-        $link = $order->status->routeLink();
-        $method = $order->status->routeMethod();
-        $text = $order->status->text();
-
-        return view('orders.show', compact('order', 'link', 'method', 'text'));
+        return view('orders.show', [ 'order' => $prepareOrderForView(Order::findOrFail($id)) ]);
     }
 
     public function edit(string $id)
