@@ -120,7 +120,6 @@ class Orders extends Controller
                 'courier_id' => null,
                 'approximate_courier_arrived_at' => null,
             ]);
-
             wsMessage('order_updated');
         }
 

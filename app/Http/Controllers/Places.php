@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Place;
+use App\Models\Order;
 
 class Places extends Controller
 {
@@ -52,7 +53,9 @@ class Places extends Controller
      */
     public function show(string $id)
     {
-        //return view('places.show', [ 'place' => Place::findOrFail($id) ]);
+        $place = Place::findOrFail($id);
+        $orders = Order::where('place_id', $id)->get();
+        return view('places.show', compact('place', 'orders'));
     }
 
     /**
