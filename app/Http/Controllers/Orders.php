@@ -111,7 +111,7 @@ class Orders extends Controller
         return to_route('orders.index');
     }
 
-    public function changeCourier($id, Messages $message)
+    public function changeCourier($id, Messages $messages)
     {
         $order = Order::findOrFail($id);
         if (Gate::allows('change-order-status', $order) && $order->status == OrderStatus::COURIER_FOUND) {
