@@ -111,7 +111,7 @@ class Orders extends Controller
         return to_route('orders.index');
     }
 
-    public function changeCourier($id)
+    public function changeCourier($id, Messages $message)
     {
         $order = Order::findOrFail($id);
         if (Gate::allows('change-order-status', $order) && $order->status == OrderStatus::COURIER_FOUND) {
@@ -120,6 +120,8 @@ class Orders extends Controller
                 'courier_id' => null,
                 'approximate_courier_arrived_at' => null,
             ]);
+
+            $messages->updateKeyboard($id, $order->id, 'Взяти замовлення');
             wsMessage('order_updated');
         }
 
