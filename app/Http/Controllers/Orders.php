@@ -121,7 +121,7 @@ class Orders extends Controller
                 'approximate_courier_arrived_at' => null,
             ]);
 
-            $messages->updateKeyboard($id, $order->id, 'Взяти замовлення');
+            $messages->updateKeyboard($id, $order->message_id, 'Взяти замовлення');
             wsMessage('order_updated');
         }
 
