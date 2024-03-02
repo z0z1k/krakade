@@ -26,9 +26,9 @@ class Telegram implements Messages
 
     }
 
-    public function delete()
+    public function delete($id)
     {
-
+        \Telegraph::deleteMessage($id)->send();
     }
 
     public function attachKeyboard($messageId, $orderId, $text)

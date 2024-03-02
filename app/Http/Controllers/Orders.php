@@ -100,14 +100,12 @@ class Orders extends Controller
     public function take($id, Messages $messages)
     {
         $order = Order::findOrFail($id);
-        if ($order->status != OrderStatus::CREATED) {
-            return to_route('orders.show', $id);
+        if ($order->status == OrderStatus::CREATED) {
+            $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'approximate_courier_arrived_at' => $order->prepared_at]);
+            $messages->updateKeyboard($order->id, $order->message_id, Auth::user()->name);
+            wsMessage('order_updated');
         }
 
-        $order->update(['status' => OrderStatus::COURIER_FOUND, 'courier_id' => Auth::user()->id, 'approximate_courier_arrived_at' => $order->prepared_at]);
-        $messages->updateKeyboard($order->id, $order->message_id, Auth::user()->name);
-
-        wsMessage('order_updated');
         return to_route('orders.index');
     }
 
@@ -144,10 +142,10 @@ class Orders extends Controller
         return to_route('orders.index');
     }
 
-    public function setDelivered($id)
+    public function setDelivered($id, Messages $messages)
     {
         $order = Order::findOrFail($id);
-        $this->deleteMessage($order->message_id);
+        $messages->delete($order->message_id);
         $order->update([ 'status' => OrderStatus::DELIVERED, 'delivered_at' => Carbon::now('Europe/Kyiv')->toDateTimeString() ]);
 
         wsMessage('order_updated');
@@ -159,8 +157,8 @@ class Orders extends Controller
     {
         $order = Order::findOrFail($id);
 
-        $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", config('constants.orders.ready'), $order->message);
-        $this->deleteMessage($order->message_id);
+        $message = preg_replace(config('constants.time_regex'), config('constants.orders.ready'), $order->message);
+        $messages->delete($order->message_id);
         $response = $this->sendMessage($message);
         $text = $order->courier->name ?? $order->status->text();
         $messages->updateKeyboard($id, $response->telegraphMessageId(), $text);
@@ -200,10 +198,10 @@ class Orders extends Controller
         return to_route('orders.index');
     }
 
-    public function cancel($id)
+    public function cancel($id, Messsages $messages)
     {
         $order = Order::findOrFail($id);
-        $this->deleteMessage($order->message_id);
+        $messages->delete($order->message_id);
         $order->update([ 'status' => OrderStatus::CANCELLED ]);
 
         wsMessage('order_updated');
@@ -228,7 +226,7 @@ class Orders extends Controller
         $order = Order::findOrFail($id);
         $time = Carbon::parse($order->prepared_at)->$method($count);
 
-        $message = preg_replace("/([01]?[0-9]|2[0-3])\:+[0-5][0-9]/", $time->format('H:i'), $order->message);
+        $message = preg_replace(config('constants.time_regex'), $time->format('H:i'), $order->message);
         if(!str_contains($message, 'Оновлення!')){
             $message  = 'Оновлення! ' . $message;
         }
