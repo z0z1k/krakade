@@ -198,7 +198,7 @@ class Orders extends Controller
         return to_route('orders.index');
     }
 
-    public function cancel($id, Messsages $messages)
+    public function cancel($id, Messages $messages)
     {
         $order = Order::findOrFail($id);
         $messages->delete($order->message_id);
