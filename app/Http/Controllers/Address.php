@@ -18,7 +18,7 @@ class Address extends Controller
     public function calc($firstLocation, $secondLocation)
     {
         $url = "http://osrm.krkd.uno/route/v1/driving/$firstLocation;$secondLocation";
-        $response = Http::get($url)['routes']['distance'];
+        $response = Http::get($url)['routes'][0]['distance'];
         return $response;
     }
 }
