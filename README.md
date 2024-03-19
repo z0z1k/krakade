@@ -2,6 +2,10 @@
 <h3>Backend laravel + mysql. Frontend blade, bootstrap, javascript</h3>
 <h4>Used websockets, OSM and OSRM API</h4>
 <h5>We send message for courier to telegram chat</h5>
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+php artisan telegraph:new-bot
 <img src="https://github.com/z0z1k/krakade/raw/laravel/public/assets/img/info/registration_place.png">
 <img src="https://github.com/z0z1k/krakade/raw/laravel/public/assets/img/info/add_place.png">
 <img src="https://github.com/z0z1k/krakade/raw/laravel/public/assets/img/info/create_order.png">
