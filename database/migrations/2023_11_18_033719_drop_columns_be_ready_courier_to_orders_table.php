@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn('be_ready');
             $table->dropColumn('ready_at');
-            $table->dropColumn('courier');
+            //$table->dropColumn('courier');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->time('be_ready');
             $table->time('ready_at');
-            $table->bigInteger('courier');
+            //$table->bigInteger('courier');
         });
     }
 };
