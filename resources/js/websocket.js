@@ -8,5 +8,5 @@ socket.onmessage = function(event) {
     setInterval(function(){
         sound.play();
     },1000);
-    setTimeout(function(){location.reload()},1200);
+    setTimeout(function(){location.reload()},1900);
 };
